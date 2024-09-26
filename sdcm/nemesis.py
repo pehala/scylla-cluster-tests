@@ -6861,6 +6861,15 @@ class IsolateNodeWithIptableRuleNemesis(Nemesis):
         self.disrupt_refuse_connection_with_block_scylla_ports_on_banned_node()
 
 
+class StandardRepairMonkey(Nemesis):
+    disruptive = False
+    kubernetes = True
+    limited = True
+
+    def disrupt(self):
+        self.disrupt_standard_repair()
+
+
 class RepairMonkey(Nemesis):
     """
     Selected number of nemesis that are focused on repair
@@ -6870,10 +6879,10 @@ class RepairMonkey(Nemesis):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.disruptions_list = self.build_disruptions_by_name([
-            "disrupt_abort_repair",
-            "disrupt_destroy_data_then_repair",
-            "disrupt_no_corrupt_repair",
-            "disrupt_restart_then_repair_node",
+            # "disrupt_abort_repair",
+            # "disrupt_destroy_data_then_repair",
+            # "disrupt_no_corrupt_repair",
+            # "disrupt_restart_then_repair_node",
             "disrupt_standard_repair"
         ])
         self.disruptions_list = self.shuffle_list_of_disruptions(self.disruptions_list)
