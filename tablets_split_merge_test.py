@@ -87,7 +87,7 @@ class TabletsSplitMergeTest(LongevityTest):
         self._pre_create_large_partitions_schema()
         stress_cmd = self.params.get('stress_cmd')
         stress_read_cmd = self.params.get('stress_read_cmd')
-        deletion_percentage = 70  # How many of dataset partitions should be deleted.
+        deletion_percentage = 60  # How many of dataset partitions should be deleted.
 
         # Run prepare stress
         self.run_prepare_write_cmd()
@@ -102,7 +102,7 @@ class TabletsSplitMergeTest(LongevityTest):
         cycles_num = 3
         for cycle in range(cycles_num):
             tablets_num = self._get_tablets_number()
-            InfoEvent(message=f"Initial tablets number before stress is: {tablets_num}").publish()
+            InfoEvent(message=f"Cycle {cycle }, Initial tablets number before stress is: {tablets_num}").publish()
             InfoEvent(message=f"Starting write load: {stress_cmd}").publish()
             stress_queue = []
             self.assemble_and_run_all_stress_cmd(stress_queue=stress_queue, stress_cmd=stress_cmd, keyspace_num=1)
