@@ -121,8 +121,9 @@ class TabletsSplitMergeTest(LongevityTest):
             tablets_num = self._get_tablets_number()
             InfoEvent(message=f"Start deletions to trigger a tablets merge following {tablets_num} tablets.").publish()
             self.delete_partitions(deletion_percentage)
-            self.node1.run_nodetool(f"flush -- {KEYSPACE_NAME}")
-            self.node1.run_nodetool("compact", args=f"{KEYSPACE_NAME} {TABLE_NAME}")
+            for node in self.db_cluster.nodes:
+                node.run_nodetool("flush")
+                node.run_nodetool("compact", args=f"{KEYSPACE_NAME} {TABLE_NAME}")
 
             InfoEvent(message="Wait for tablets merge after deletion is done.").publish()
             self._wait_for_tablets_merge(tablets_num)

@@ -2,7 +2,7 @@ test_duration: 240
 
 prepare_write_cmd: "scylla-bench -workload=sequential -mode=write -replication-factor=3 -partition-count=100 -clustering-row-count=5555                       -clustering-row-size=1884 -concurrency=20 -connection-count=20 -consistency-level=quorum -rows-per-request=50 -timeout=30s -validate-data"
 stress_cmd:        "scylla-bench -workload=sequential -mode=write -replication-factor=3 -partition-count=10000 -clustering-row-count=5555 -partition-offset=101 -clustering-row-size=1884 -concurrency=20 -connection-count=20 -consistency-level=quorum -rows-per-request=50 -timeout=30s -validate-data"
-stress_read_cmd:   "scylla-bench -workload=sequential -mode=read -replication-factor=3 -partition-count=200 -clustering-row-count=5555                        -clustering-row-size=1884 -concurrency=20 -connection-count=20 -consistency-level=quorum -rows-per-request=50 -timeout=30s -retry-number=30 -retry-interval=80ms,1s -iterations 0 -duration=30m -validate-data"
+stress_read_cmd:   "scylla-bench -workload=sequential -mode=read -replication-factor=3 -partition-count=200 -clustering-row-count=5555                        -clustering-row-size=1884 -concurrency=20 -connection-count=20 -consistency-level=quorum -rows-per-request=1 -timeout=30s -retry-number=30 -retry-interval=80ms,1s -iterations 0 -duration=30m -validate-data"
 
 pre_create_keyspace: "CREATE KEYSPACE IF NOT EXISTS scylla_bench WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor': 3} and tablets={'initial':32};"
 
@@ -24,3 +24,5 @@ append_scylla_yaml:
 
 user_prefix: 'tablets-split-merge'
 use_mgmt: false
+
+post_prepare_cql_cmds: "ALTER TABLE scylla_bench.test with gc_grace_seconds = 0"
