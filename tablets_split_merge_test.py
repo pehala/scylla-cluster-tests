@@ -87,7 +87,7 @@ class TabletsSplitMergeTest(LongevityTest):
         self._pre_create_large_partitions_schema()
         stress_cmd = self.params.get('stress_cmd')
         stress_read_cmd = self.params.get('stress_read_cmd')
-        deletion_percentage = 60  # How many of dataset partitions should be deleted.
+        deletion_percentage = 80  # How many of dataset partitions should be deleted.
 
         # Run prepare stress
         self.run_prepare_write_cmd()
