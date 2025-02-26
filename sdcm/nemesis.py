@@ -4314,6 +4314,7 @@ class Nemesis:  # pylint: disable=too-many-instance-attributes,too-many-public-m
 
     @target_data_nodes
     def grow_fill_cluster(self):
+        self.set_target_node(current_disruption="DoubleCluserSmaller")
         sleep_time_between_ops = self.cluster.params.get('nemesis_sequence_sleep_between_ops')
         if not self.has_steady_run and sleep_time_between_ops:
             self.steady_state_latency()
