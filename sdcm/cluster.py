@@ -512,6 +512,16 @@ class BaseNode(AutoSshContainerMixin):  # pylint: disable=too-many-instance-attr
         certificate_params_builder = ScyllaYamlCertificateAttrBuilder(params=self.parent_cluster.params, node=self)
         return node_params_builder.model_dump(exclude_none=True) | certificate_params_builder.model_dump(exclude_none=True)
 
+    def install_object_storage_config(self, remoter):
+        remoter.send_files(src=get_data_dir_path('encrypt_conf'), dst="/tmp/")
+        remoter.sudo(shell_script_cmd(dedent("""
+            rm -rf /etc/encrypt_conf
+            mv -f /tmp/encrypt_conf /etc
+            mkdir -p /etc/scylla/encrypt_conf /etc/encrypt_conf/system_key_dir
+            chown -R scylla:scylla /etc/scylla /etc/encrypt_conf
+        """)))
+        remoter.sudo("md5sum /etc/encrypt_conf/*.pem", ignore_status=True)
+
     @property
     def proposed_scylla_yaml(self) -> ScyllaYaml:
         """
@@ -528,6 +538,18 @@ class BaseNode(AutoSshContainerMixin):  # pylint: disable=too-many-instance-attr
         if self._is_zero_token_node:
             scylla_yml.join_ring = False
         if append_scylla_yaml := copy.deepcopy(self.parent_cluster.params.get('append_scylla_yaml')) or {}:
+            if "object_storage_config" in append_scylla_yaml:
+                file_name = append_scylla_yaml["object_storage_config"]
+                self.remoter.sudo(shell_script_cmd(dedent(f"""
+                    echo "endpoints:
+                      - name: s3.us-east-1.amazonaws.com
+                        port: 443
+                        https: true
+                        aws_region: us-east-1
+                        iam_role_arn: >-
+                          arn:aws:iam::797456418907:instance-profile/qa-scylla-manager-backup-instance-profile
+                    " > {file_name}""")))
+                self.log.warning(f"Created object object_storage_config {file_name}")
             if any(key in append_scylla_yaml for key in (
                     "system_key_directory", "system_info_encryption", "kmip_hosts")):
                 install_encryption_at_rest_files(self.remoter)

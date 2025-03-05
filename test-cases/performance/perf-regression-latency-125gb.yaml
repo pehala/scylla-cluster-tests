@@ -28,6 +28,6 @@ print_kernel_callstack: true
 use_mgmt: true
 
 store_perf_results: true
-email_recipients: ['scylla-perf-results@scylladb.com']
+email_recipients: ['petr.hala@scylladb.com']
 custom_es_index: 'performancestatsv2'
 use_hdrhistogram: true
