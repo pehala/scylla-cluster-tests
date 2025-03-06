@@ -106,7 +106,7 @@ class SoftTimeoutEvent(TestFrameworkEvent):
 
 class ElasticsearchEvent(InformationalEvent):
     def __init__(self, doc_id: str, error: str):
-        super().__init__(severity=Severity.ERROR)
+        super().__init__(severity=Severity.WARNING)
 
         self.doc_id = doc_id
         self.error = error

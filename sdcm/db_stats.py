@@ -481,7 +481,7 @@ class Stats:
     @cached_property
     def elasticsearch(self) -> Optional[ES]:
         try:
-            return ES()
+            raise ValueError("x")
         except Exception as exc:  # pylint: disable=broad-except
             LOGGER.exception("Failed to create ES connection (doc_id=%s)", self._test_id)
             ElasticsearchEvent(doc_id=self._test_id, error=str(exc)).publish()
