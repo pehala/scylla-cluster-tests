@@ -43,4 +43,4 @@ append_scylla_yaml:
   auto_snapshot: false
   experimental_features:
     - keyspace-storage-options
-  object_storage_config: /tmp/object_storage_config.yaml
+  object_storage_config_file: /etc/scylla/object_storage_config.yaml
