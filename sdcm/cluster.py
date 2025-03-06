@@ -540,15 +540,8 @@ class BaseNode(AutoSshContainerMixin):  # pylint: disable=too-many-instance-attr
         if append_scylla_yaml := copy.deepcopy(self.parent_cluster.params.get('append_scylla_yaml')) or {}:
             if "object_storage_config" in append_scylla_yaml:
                 file_name = append_scylla_yaml["object_storage_config"]
-                self.remoter.sudo(shell_script_cmd(dedent(f"""
-                    echo "endpoints:
-                      - name: s3.us-east-1.amazonaws.com
-                        port: 443
-                        https: true
-                        aws_region: us-east-1
-                        iam_role_arn: >-
-                          arn:aws:iam::797456418907:instance-profile/qa-scylla-manager-backup-instance-profile
-                    " > {file_name}""")))
+                self.remoter.sudo(shell_script_cmd(
+                    f"""    echo 'endpoints:\n  - name: s3.us-east-1.amazonaws.com\n    port: 443\n    https: true\n    aws_region: us-east-1\n    iam_role_arn: arn:aws:iam::797456418907:instance-profile/qa-scylla-manager-backup-instance-profile\n' > {file_name}"""))
                 self.log.warning(f"Created object object_storage_config {file_name}")
             if any(key in append_scylla_yaml for key in (
                     "system_key_directory", "system_info_encryption", "kmip_hosts")):
