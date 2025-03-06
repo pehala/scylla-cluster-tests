@@ -11,6 +11,8 @@ stress_cmd_r: "cassandra-stress read no-warmup  cl=QUORUM duration=60m -schema '
 stress_cmd_m: "cassandra-stress mixed no-warmup cl=QUORUM duration=60m -schema 'replication(strategy=NetworkTopologyStrategy,replication_factor=3)' -mode cql3 native -rate threads=150 -col 'size=FIXED(128) n=FIXED(8)' -pop 'dist=gauss(1..125000000,62500000,125000000)' "
 stress_multiplier: 2
 
+pre_create_keyspace: ["CREATE KEYSPACE IF NOT EXISTS keyspace1 WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor': 3} AND tablets = {'initial': 1024} AND storage = {'type': 'S3', 'endpoint': 's3.us-east-1.amazonaws.com', 'bucket': 'manager-backup-tests-us-east-1'};"]
+
 n_db_nodes: 3
 n_loaders: 4
 n_monitor_nodes: 1
@@ -37,3 +39,8 @@ email_subject_postfix: 'disk and cache'
 custom_es_index: 'performancestatsv2'
 
 use_hdrhistogram: true
+append_scylla_yaml:
+  auto_snapshot: false
+  experimental_features:
+    - keyspace-storage-options
+  object_storage_config: /tmp/object_storage_config.yaml
