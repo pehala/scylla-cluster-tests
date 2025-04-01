@@ -596,7 +596,7 @@ class Nemesis:  # pylint: disable=too-many-instance-attributes,too-many-public-m
     @staticmethod
     @lru_cache
     def get_disrupt_method_from_class(nemesis_cls):
-        method_name = DISRUPT_METHOD_IDENTIFY_REGEX.search(inspect.getsource(nemesis_cls))
+        method_name = DISRUPT_METHOD_IDENTIFY_REGEX.search(inspect.getsource(nemesis_cls.disrupt))
         if method_name:
             return method_name.group("method_name")
 
