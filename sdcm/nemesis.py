@@ -5625,11 +5625,9 @@ def disrupt_method_wrapper(method, is_exclusive=False):  # pylint: disable=too-m
 
 
 class SisyphusMonkey(Nemesis):
-    NEMESIS_SELECTOR = None
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.build_list_of_disruptions_to_execute(nemesis_selector=self.nemesis_selector)
+        self.build_list_of_disruptions_to_execute()
         self.shuffle_list_of_disruptions()
 
     def disrupt(self):
@@ -6065,35 +6063,6 @@ class CategoricalMonkey(Nemesis):
         self.execute_disrupt_method(method)
 
 
-class LimitedChaosMonkey(SisyphusMonkey):
-    # Limit the nemesis scope:
-    #  - NodeToolCleanupMonkey
-    #  - DecommissionMonkey
-    #  - DrainerMonkey
-    #  - RefreshMonkey
-    #  - StopStartMonkey
-    #  - MajorCompactionMonkey
-    #  - ModifyTableMonkey
-    #  - EnospcMonkey
-    #  - StopWaitStartMonkey
-    #  - HardRebootNodeMonkey
-    #  - SoftRebootNodeMonkey
-    #  - TruncateMonkey
-    #  - TopPartitions
-    #  - MgmtCorruptThenRepair
-    #  - MgmtRepair
-    #  - NoCorruptRepairMonkey
-    #  - SnapshotOperations
-    #  - AbortRepairMonkey
-    #  - MgmtBackup
-    #  - MgmtBackupSpecificKeyspaces
-    #  - AddDropColumnMonkey
-    #  - PauseLdapNemesis
-    #  - ToggleLdapConfiguration
-
-    NEMESIS_SELECTOR = "limited"
-
-
 CLOUD_LIMITED_CHAOS_MONKEY = ['disrupt_nodetool_cleanup',
                               'disrupt_nodetool_drain', 'disrupt_nodetool_refresh',
                               'disrupt_stop_start_scylla_server', 'disrupt_major_compaction',
@@ -6488,59 +6457,6 @@ class StopStartInterfacesNetworkMonkey(Nemesis):
         self.disrupt_network_start_stop_interface()
 
 
-class DisruptiveMonkey(SisyphusMonkey):
-    # Limit the nemesis scope:
-    #  - ValidateHintedHandoffShortDowntime
-    #  - CorruptThenRepairMonkey
-    #  - CorruptThenRebuildMonkey
-    #  - RestartThenRepairNodeMonkey
-    #  - StopStartMonkey
-    #  - MultipleHardRebootNodeMonkey
-    #  - HardRebootNodeMonkey
-    #  - SoftRebootNodeMonkey
-    #  - StopWaitStartMonkey
-    #  - NodeTerminateAndReplace
-    #  - EnospcMonkey
-    #  - DecommissionMonkey
-    #  - NodeRestartWithResharding
-    #  - DrainerMonkey
-
-    NEMESIS_SELECTOR = "disruptive"
-
-
-class NonDisruptiveMonkey(Nemesis):
-    # Limit the nemesis scope:
-    #  - NodeToolCleanupMonkey
-    #  - SnapshotOperations
-    #  - RefreshMonkey
-    #  - RefreshBigMonkey -
-    #  - NoCorruptRepairMonkey
-    #  - MgmtRepair
-    NEMESIS_SELECTOR = "not disruptive"
-
-
-class NetworkMonkey(SisyphusMonkey):
-    # Limit the nemesis scope:
-    #  - RandomInterruptionNetworkMonkey
-    #  - StopStartInterfacesNetworkMonkey
-    #  - BlockNetworkMonkey
-
-    NEMESIS_SELECTOR = "networking"
-
-
-class GeminiChaosMonkey(SisyphusMonkey):
-    # Limit the nemesis scope to use with gemini
-    # - StopStartMonkey
-    # - RestartThenRepairNodeMonkey
-
-    NEMESIS_SELECTOR = "run_with_gemini"
-
-
-class GeminiNonDisruptiveChaosMonkey(SisyphusMonkey):
-
-    NEMESIS_SELECTOR = "run_with_gemini and not disruptive"
-
-
 class ScyllaOperatorBasicOperationsMonkey(Nemesis):
     """
     Selected number of nemesis that is focused on scylla-operator functionality
@@ -6635,12 +6551,8 @@ class RepairStreamingErrMonkey(Nemesis):
         self.disrupt_repair_streaming_err()
 
 
-COMPLEX_NEMESIS = [NoOpMonkey, ChaosMonkey,
-                   LimitedChaosMonkey,
-                   ScyllaCloudLimitedChaosMonkey,
-                   AllMonkey, MdcChaosMonkey,
-                   DisruptiveMonkey, NonDisruptiveMonkey, GeminiNonDisruptiveChaosMonkey,
-                   GeminiChaosMonkey, NetworkMonkey, SisyphusMonkey,
+COMPLEX_NEMESIS = [NoOpMonkey, ChaosMonkey, ScyllaCloudLimitedChaosMonkey,
+                   AllMonkey, MdcChaosMonkey, SisyphusMonkey,
                    DisruptKubernetesNodeThenReplaceScyllaNode,
                    DisruptKubernetesNodeThenDecommissionAndAddScyllaNode,
                    CategoricalMonkey]
@@ -6703,21 +6615,6 @@ class StartStopValidationCompaction(Nemesis):
         self.disrupt_start_stop_validation_compaction()
 
 
-class FreeTierSetMonkey(SisyphusMonkey):
-    """Nemesis set for testing Scylla Cloud free tier.
-
-    Disruptions that can be caused by random failures and user actions and human operator:
-    - doesn't include any topology changes (scale up/down, decommission)
-    - doesn't include manager backup/repairs
-    - doesn't include k8s nodes related (i.e. one title as exclusive)"""
-
-    def __init__(self, *args, **kwargs):
-        # skip SisyphusMonkey __init__ to not repeat build disruption logic, but still we want to run Nemesis class __init__
-        super(SisyphusMonkey, self).__init__(*args, **kwargs)  # pylint: disable=bad-super-call
-        self.build_list_of_disruptions_to_execute(nemesis_selector='free_tier_set')
-        self.shuffle_list_of_disruptions()
-
-
 class SlaIncreaseSharesDuringLoad(Nemesis):
     disruptive = False
     sla = True
@@ -6773,19 +6670,6 @@ class SlaMaximumAllowedSlsWithMaxSharesDuringLoad(Nemesis):
 
     def disrupt(self):
         self.disrupt_maximum_allowed_sls_with_max_shares_during_load()
-
-
-class SlaNemeses(Nemesis):
-    disruptive = False
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.build_list_of_disruptions_to_execute(nemesis_selector="sla")
-        # self.disrupt_methods_list = self.get_list_of_methods_by_flags(sla=True)
-        self.shuffle_list_of_disruptions()
-
-    def disrupt(self):
-        self.call_random_disrupt_method(disrupt_methods=self.disruptions_list)
 
 
 class CreateIndexNemesis(Nemesis):
@@ -6857,20 +6741,6 @@ class GrowShrinkZeroTokenNode(Nemesis):
 
     def disrupt(self):
         self.disrupt_grow_shrink_zero_nodes()
-
-
-class ZeroTokenSetMonkey(SisyphusMonkey):
-    """Nemesis set for testing Scylla with configured zero nodes
-
-    Disruptions that can be caused by random failures and user actions with
-    zero node configured
-    """
-
-    def __init__(self, *args, **kwargs):
-        super(SisyphusMonkey, self).__init__(*args, **kwargs)  # pylint: disable=bad-super-call
-        self.use_all_nodes_as_target = True
-        self.build_list_of_disruptions_to_execute(nemesis_selector='zero_node_changes')
-        self.shuffle_list_of_disruptions()
 
 
 class SerialRestartOfElectedTopologyCoordinatorNemesis(Nemesis):
