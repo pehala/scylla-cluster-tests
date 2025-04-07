@@ -212,7 +212,6 @@ def target_all_nodes(func: Callable) -> Callable:
 
 
 class Nemesis:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
-    DISRUPT_NAME_PREF: str = "disrupt_"
 
     # nemesis flags:
     topology_changes: bool = False  # flag that signal that nemesis is changing cluster topology,
@@ -234,13 +233,6 @@ class Nemesis:  # pylint: disable=too-many-instance-attributes,too-many-public-m
     zero_node_changes: bool = False
 
     def __init__(self, tester_obj, termination_event, *args, nemesis_selector=None, nemesis_seed=None, **kwargs):  # pylint: disable=unused-argument
-        for name, member in inspect.getmembers(self, lambda x: inspect.isfunction(x) or inspect.ismethod(x)):
-            if not name.startswith(self.DISRUPT_NAME_PREF):
-                continue
-            is_exclusive = name in EXCLUSIVE_NEMESIS_NAMES
-            # add "disrupt_method_wrapper" decorator to all methods are started with "disrupt_"
-            setattr(self.__class__, name, disrupt_method_wrapper(member, is_exclusive=is_exclusive))
-
         # *args -  compatible with CategoricalMonkey
         self.tester = tester_obj  # ClusterTester object
         self.nemesis_registry = NemesisRegistry(base_class=Nemesis,
@@ -5499,7 +5491,7 @@ def disrupt_method_wrapper(method, is_exclusive=False):  # pylint: disable=too-m
                 nemesis_info = argus_create_nemesis_info(nemesis=args[0], class_name=class_name,
                                                          method_name=method_name, start_time=start_time)
                 try:
-                    result = method(*args[1:], **kwargs)
+                    result = method(*args, **kwargs)
                 except (UnsupportedNemesis, MethodVersionNotFound) as exp:
                     skip_reason = str(exp)
                     log_info.update({'subtype': 'skipped', 'skip_reason': skip_reason})
@@ -5595,6 +5587,15 @@ def disrupt_method_wrapper(method, is_exclusive=False):  # pylint: disable=too-m
         return result
 
     return wrapper
+
+
+DISRUPT_NAME_PREF = "disrupt_"
+for name, member in inspect.getmembers(Nemesis, lambda x: inspect.isfunction(x) or inspect.ismethod(x)):
+    if not name.startswith(DISRUPT_NAME_PREF):
+        continue
+    is_exclusive = name in EXCLUSIVE_NEMESIS_NAMES
+    # add "disrupt_method_wrapper" decorator to all methods are started with "disrupt_"
+    setattr(Nemesis, name, disrupt_method_wrapper(member, is_exclusive=is_exclusive))
 
 
 class SisyphusMonkey(Nemesis):
