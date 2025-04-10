@@ -4756,13 +4756,11 @@ class BaseScyllaCluster:  # pylint: disable=too-many-public-methods, too-many-in
             node.install_scylla_debuginfo()
 
         simulated_regions_num = self.params.get('simulated_regions')
-        if self.test_config.MULTI_REGION or simulated_regions_num > 1 or self.params.get('simulated_racks') > 1:
-            if simulated_regions_num > 1:
-                datacenters = [
-                    f"{self.datacenter[0]}-s{i}" for i in range(1, simulated_regions_num + 1)]  # pylint: disable=no-member
-            else:
-                datacenters = self.datacenter  # pylint: disable=no-member
-            SnitchConfig(node=node, datacenters=datacenters).apply()
+        datacenters = self.datacenter  # pylint: disable=no-member
+        if self.test_config.MULTI_REGION or simulated_regions_num > 1:
+            datacenters = [
+                f"{self.datacenter[0]}-s{i}" for i in range(1, simulated_regions_num + 1)]  # pylint: disable=no-member
+        SnitchConfig(node=node, datacenters=datacenters).apply()
 
         if any([self.params.get('server_encrypt'), self.params.get('client_encrypt')]):
             # Create node certificate for internode communication
