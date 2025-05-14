@@ -180,3 +180,9 @@ class AgentBackupParameters(BaseModel):
     low_level_retries: Optional[int] = 20
 
     model_config = ConfigDict(arbitrary_types_allowed=False)
+
+
+class ObjectStorageUploadMode(str, Enum):
+    AUTO = "auto"
+    RCLONE = "rclone"
+    NATIVE = "native"
