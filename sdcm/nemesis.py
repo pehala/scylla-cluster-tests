@@ -211,8 +211,7 @@ def target_all_nodes(func: Callable) -> Callable:
     return func
 
 
-class Nemesis:
-
+class NemesisBaseClass:
     # nemesis flags:
     topology_changes: bool = False  # flag that signal that nemesis is changing cluster topology,
     # i.e. adding/removing nodes/data centers
@@ -229,13 +228,45 @@ class Nemesis:
     config_changes: bool = False
     free_tier_set: bool = False     # nemesis should be run in FreeTierNemesisSet
     manager_operation: bool = False  # flag that signals that the nemesis uses scylla manager
-    delete_rows: bool = False  # A flag denotes a nemesis deletes partitions/rows, generating tombstones.
+    delete_rows: bool = False       # A flag denotes a nemesis deletes partitions/rows, generating tombstones.
     zero_node_changes: bool = False
+
+    @classmethod
+    def add_disrupt_method(cls, func=None):
+        """
+        Add disrupt methods to Nemesis class, so those can be randomlly selected by `Nemesis.call_random_disrupt_method`
+        or `Nemesis.get_list_of_disrupt_methods_for_nemesis_subclasses`.
+
+        example of usage:
+        >>> class AddRemoveDCMonkey(Nemesis):
+        >>>    @Nemesis.add_disrupt_method
+        >>>    def disrupt_add_remove_dc(self):
+        >>>        return 'Worked'
+        >>>
+        >>>    def disrupt(self):
+        >>>        self.disrupt_add_remove_dc()
+
+        :param func: if not None, function was used with parantasis @Nemesis.add_disrupt_method()
+        :return: the original function
+        """
+        if func is None:
+            # if func is not defined, return a this function wrapped see https://stackoverflow.com/a/39335652
+            return partial(cls.add_disrupt_method)
+
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            return func(self, *args, **kwargs)
+
+        setattr(cls, func.__name__, wrapper)  # bind it to Nemesis class
+        return func  # returning func means func can still be used normally
+
+
+class Nemesis:
 
     def __init__(self, tester_obj, termination_event, *args, nemesis_selector=None, nemesis_seed=None, **kwargs):
         # *args -  compatible with CategoricalMonkey
         self.tester = tester_obj  # ClusterTester object
-        self.nemesis_registry = NemesisRegistry(base_class=Nemesis,
+        self.nemesis_registry = NemesisRegistry(base_class=NemesisBaseClass,
                                                 excluded_list=COMPLEX_NEMESIS)
         self.cluster: Union[BaseCluster, BaseScyllaCluster] = tester_obj.db_cluster
         self.loaders = tester_obj.loaders
@@ -300,35 +331,6 @@ class Nemesis:
                 if 'scylla-bench' in stress_cmd_splitted and '-mode=write' in stress_cmd_splitted:
                     self.num_deletions_factor = 1
                     break
-
-    @classmethod
-    def add_disrupt_method(cls, func=None):
-        """
-        Add disrupt methods to Nemesis class, so those can be randomlly selected by `Nemesis.call_random_disrupt_method`
-        or `Nemesis.get_list_of_disrupt_methods_for_nemesis_subclasses`.
-
-        example of usage:
-        >>> class AddRemoveDCMonkey(Nemesis):
-        >>>    @Nemesis.add_disrupt_method
-        >>>    def disrupt_add_remove_dc(self):
-        >>>        return 'Worked'
-        >>>
-        >>>    def disrupt(self):
-        >>>        self.disrupt_add_remove_dc()
-
-        :param func: if not None, function was used with parantasis @Nemesis.add_disrupt_method()
-        :return: the original function
-        """
-        if func is None:
-            # if func is not defined, return a this function wrapped see https://stackoverflow.com/a/39335652
-            return partial(cls.add_disrupt_method)
-
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            return func(self, *args, **kwargs)
-
-        setattr(cls, func.__name__, wrapper)  # bind it to Nemesis class
-        return func  # returning func means func can still be used normally
 
     @staticmethod
     @contextmanager
@@ -5668,7 +5670,7 @@ class NoOpMonkey(Nemesis):
         time.sleep(300)
 
 
-class AddRemoveDcNemesis(Nemesis):
+class AddRemoveDcNemesis(NemesisBaseClass):
 
     disruptive = True
     kubernetes = False
@@ -5676,8 +5678,8 @@ class AddRemoveDcNemesis(Nemesis):
     limited = True
     topology_changes = True
 
-    def disrupt(self):
-        self.disrupt_add_remove_dc()
+    def __init__(self, runner):
+        runner.disrupt_add_remove_dc()
 
 
 class GrowShrinkClusterNemesis(Nemesis):
