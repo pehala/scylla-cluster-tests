@@ -1,67 +1,44 @@
-"""Common mock classes for nemesis tests"""
-from dataclasses import dataclass, field
-
-from sdcm.cluster import BaseScyllaCluster
-from unit_tests.dummy_remote import LocalLoaderSetDummy
-
-PARAMS = dict(nemesis_interval=1, nemesis_filter_seeds=False)
+"""Common test hierarchy for nemesis tests."""
 
 
-@dataclass
-class Node:
-    running_nemesis = None
-    public_ip_address: str = '127.0.0.1'
-    name: str = 'Node1'
-
-    @property
-    def scylla_shards(self):
-        return 8
-
-    def log_message(self, *args, **kwargs):
-        pass
+class TestBaseClass:
+    COMMON_STRING = "called test function "
+    flag_a = False
+    flag_c = False
+    flag_d = False
+    flag_common = False
+    disabled = False
 
 
-@dataclass
-class Cluster:
-    nodes: list
-    params: dict = field(default_factory=lambda: PARAMS)
+class CustomNemesisA(TestBaseClass):
+    flag_a = True
+    flag_common = True
 
-    def check_cluster_health(self):
-        pass
-
-    @property
-    def data_nodes(self):
-        return self.nodes
-
-    @property
-    def zero_nodes(self):
-        return self.nodes
-
-    def log_message(self, *args, **kwargs):
-        pass
+    def __init__(self, runner):
+        print(runner.COMMON_STRING + "a")
 
 
-@dataclass
-class FakeTester:
-    params: dict = field(default_factory=lambda: PARAMS)
-    loaders: LocalLoaderSetDummy = field(default_factory=LocalLoaderSetDummy)
-    db_cluster: Cluster | BaseScyllaCluster = field(default_factory=lambda: Cluster(nodes=[Node(), Node()]))
-    monitors: list = field(default_factory=list)
+class DisabledNemesis(TestBaseClass):
+    """This nemesis is disabled when used by SisyphusRunner"""
+    flag_common = True
+    disabled = True
 
-    def __post_init__(self):
-        self.db_cluster.params = self.params
+    def __init__(self, runner):
+        print(runner.COMMON_STRING + "b")
 
-    def create_stats(self):
-        pass
 
-    def update(self, *args, **kwargs):
-        pass
+class CustomNemesisC(TestBaseClass):
+    flag_c = True
+    flag_common = True
 
-    def get_scylla_versions(self):
-        pass
+    def __init__(self, runner):
+        print(runner.COMMON_STRING + "c")
 
-    def get_test_details(self):
-        pass
 
-    def id(self):
-        return 0
+class CustomNemesisD(TestBaseClass):
+    flag_d = True
+    flag_a = True
+    flag_common = True
+
+    def __init__(self, runner):
+        print(runner.COMMON_STRING + "d")
