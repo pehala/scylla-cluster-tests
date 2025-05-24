@@ -1564,7 +1564,6 @@ class Nemesis:
     def disrupt_major_compaction(self):
         self._major_compaction()
 
-    @target_data_nodes
     def disrupt_load_and_stream(self):
         # Checking the columns number of keyspace1.standard1
         self.log.debug('Prepare keyspace1.standard1 if it does not exist')
@@ -2813,15 +2812,12 @@ class Nemesis:
         disrupt_func = getattr(self, disrupt_func_name)
         disrupt_func()
 
-    @target_data_nodes
     def disrupt_mgmt_backup_specific_keyspaces(self):
         self._mgmt_backup(backup_specific_tables=True)
 
-    @target_data_nodes
     def disrupt_mgmt_backup(self):
         self._mgmt_backup(backup_specific_tables=False)
 
-    @target_data_nodes
     def disrupt_mgmt_restore(self):
         def get_total_scylla_partition_size():
             result = self.cluster.data_nodes[0].remoter.run("df -k | grep /var/lib/scylla")  # Size in KB
@@ -3022,13 +3018,11 @@ class Nemesis:
             mgr_task.stop()
             assert False, f'Backup task {mgr_task.id} timed out - while on status {status}'
 
-    @target_data_nodes
     def disrupt_mgmt_repair_cli(self):
         if not self.cluster.params.get('use_mgmt') and not self.cluster.params.get('use_cloud_manager'):
             raise UnsupportedNemesis('Scylla-manager configuration is not defined!')
         self._mgmt_repair_cli()
 
-    @target_data_nodes
     def disrupt_mgmt_corrupt_then_repair(self):
         if not self.cluster.params.get('use_mgmt') and not self.cluster.params.get('use_cloud_manager'):
             raise UnsupportedNemesis('Scylla-manager configuration is not defined!')
@@ -3113,7 +3107,6 @@ class Nemesis:
         self.log.debug("Execute a complete repair for target node")
         self.repair_nodetool_repair()
 
-    @target_data_nodes
     def disrupt_validate_hh_short_downtime(self):
         """
             Validates that hinted handoff mechanism works: there were no drops and errors
@@ -4070,7 +4063,6 @@ class Nemesis:
             self.target_node.remoter.run('sudo dd if=/dev/urandom of={} count=1024'.format(sstable_file))
             self.log.debug('File {} was corrupted by dd'.format(sstable_file))
 
-    @target_data_nodes
     def disrupt_corrupt_then_scrub(self):
         """
         Try to rebuild the sstables of all test keyspaces by scrub, the corrupted partitions
@@ -4149,7 +4141,6 @@ class Nemesis:
                                                    error_handler=self._nemesis_stress_failure_handler)
         self.log.info(f"Double load results: {results}")
 
-    @target_data_nodes
     def disrupt_grow_shrink_cluster(self):
         sleep_time_between_ops = self.cluster.params.get('nemesis_sequence_sleep_between_ops')
         if not self.has_steady_run and sleep_time_between_ops:
@@ -4939,7 +4930,6 @@ class Nemesis:
                                                   for error in error_events if error)
                                         )
 
-    @target_data_nodes
     def disrupt_create_index(self):
         """
         Create index on a random column (regular or static) of a table with the most number of partitions and wait until it gets build.
@@ -4976,7 +4966,6 @@ class Nemesis:
                                   target_node=self.target_node, additional_info=f"index: {index_name}"):
                     drop_index(session, ks, index_name)
 
-    @target_data_nodes
     def disrupt_add_remove_mv(self):
         """
         Create a Materialized view on an existing table while a node is down.
@@ -5141,7 +5130,6 @@ class Nemesis:
         if errors:
             raise AuditLogTestFailure("\n".join(errors))
 
-    @target_data_nodes
     def disrupt_bootstrap_streaming_error(self):
         """Abort bootstrap process at different point
 
@@ -5615,6 +5603,7 @@ class AddRemoveDcNemesis(NemesisBaseClass):
         runner.disrupt_add_remove_dc()
 
 
+@target_data_nodes
 class GrowShrinkClusterNemesis(NemesisBaseClass):
     disruptive = True
     kubernetes = True
@@ -5812,6 +5801,7 @@ class RefreshMonkey(NemesisBaseClass):
         runner.disrupt_nodetool_refresh(big_sstable=False)
 
 
+@target_data_nodes
 class LoadAndStreamMonkey(NemesisBaseClass):
     disruptive = False
     run_with_gemini = False
@@ -6087,6 +6077,7 @@ class ToggleGcModeMonkey(NemesisBaseClass):
         runner.disrupt_toggle_table_gc_mode()
 
 
+@target_data_nodes
 class MgmtBackup(NemesisBaseClass):
     manager_operation = True
     disruptive = False
@@ -6097,6 +6088,7 @@ class MgmtBackup(NemesisBaseClass):
         runner.disrupt_mgmt_backup()
 
 
+@target_data_nodes
 class MgmtBackupSpecificKeyspaces(NemesisBaseClass):
     manager_operation = True
     disruptive = False
@@ -6107,6 +6099,7 @@ class MgmtBackupSpecificKeyspaces(NemesisBaseClass):
         runner.disrupt_mgmt_backup_specific_keyspaces()
 
 
+@target_data_nodes
 class MgmtRestore(NemesisBaseClass):
     manager_operation = True
     disruptive = True
@@ -6118,6 +6111,7 @@ class MgmtRestore(NemesisBaseClass):
         runner.disrupt_mgmt_restore()
 
 
+@target_data_nodes
 class MgmtRepair(NemesisBaseClass):
     manager_operation = True
     disruptive = False
@@ -6132,6 +6126,7 @@ class MgmtRepair(NemesisBaseClass):
         # For Manager APIs test, use: runner.disrupt_mgmt_repair_api()
 
 
+@target_data_nodes
 class MgmtCorruptThenRepair(NemesisBaseClass):
     manager_operation = True
     disruptive = True
@@ -6273,6 +6268,7 @@ class ScyllaKillMonkey(NemesisBaseClass):
         runner.disrupt_kill_scylla()
 
 
+@target_data_nodes
 class ValidateHintedHandoffShortDowntime(NemesisBaseClass):
     disruptive = True
     kubernetes = True
@@ -6518,6 +6514,7 @@ COMPLEX_NEMESIS = [NoOpMonkey, ScyllaCloudLimitedChaosMonkey,
                    CategoricalMonkey]
 
 
+@target_data_nodes
 class CorruptThenScrubMonkey(NemesisBaseClass):
     disruptive = False
     supports_high_disk_utilization = False  # Failed for: https://github.com/scylladb/scylladb/issues/22088
@@ -6634,6 +6631,7 @@ class SlaMaximumAllowedSlsWithMaxSharesDuringLoad(NemesisBaseClass):
         runner.disrupt_maximum_allowed_sls_with_max_shares_during_load()
 
 
+@target_data_nodes
 class CreateIndexNemesis(NemesisBaseClass):
 
     disruptive = False
@@ -6645,6 +6643,7 @@ class CreateIndexNemesis(NemesisBaseClass):
         runner.disrupt_create_index()
 
 
+@target_data_nodes
 class AddRemoveMvNemesis(NemesisBaseClass):
 
     disruptive = True
@@ -6667,6 +6666,7 @@ class ToggleAuditNemesisSyslog(NemesisBaseClass):
         runner.disrupt_toggle_audit_syslog()
 
 
+@target_data_nodes
 class BootstrapStreamingErrorNemesis(NemesisBaseClass):
 
     disruptive = True
