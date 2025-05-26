@@ -2,7 +2,6 @@ AbortRepairMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -19,7 +18,6 @@ AddDropColumnMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -36,7 +34,6 @@ AddRemoveDcNemesis:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -53,7 +50,6 @@ AddRemoveMvNemesis:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: false
@@ -64,14 +60,12 @@ AddRemoveMvNemesis:
   schema_changes: true
   sla: false
   supports_high_disk_utilization: false
-  target_pool: data_nodes
   topology_changes: false
   zero_node_changes: false
 AddRemoveRackNemesis:
   config_changes: true
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -85,14 +79,9 @@ AddRemoveRackNemesis:
   topology_changes: false
   zero_node_changes: false
 BlockNetworkMonkey:
-  additional_configs:
-  - configurations/network_config/two_interfaces.yaml
-  additional_params:
-    ip_ssh_connections: public
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -103,14 +92,12 @@ BlockNetworkMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 BootstrapStreamingErrorNemesis:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -121,14 +108,12 @@ BootstrapStreamingErrorNemesis:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: data_nodes
   topology_changes: true
   zero_node_changes: false
 CDCStressorMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: false
@@ -145,7 +130,6 @@ ClusterRollingRestart:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -156,14 +140,12 @@ ClusterRollingRestart:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 ClusterRollingRestartRandomOrder:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -174,14 +156,12 @@ ClusterRollingRestartRandomOrder:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 CorruptThenRebuildMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -198,7 +178,6 @@ CorruptThenRepairMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -215,7 +194,6 @@ CorruptThenScrubMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -226,14 +204,12 @@ CorruptThenScrubMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: false
-  target_pool: data_nodes
   topology_changes: false
   zero_node_changes: false
 CreateIndexNemesis:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: false
@@ -244,14 +220,12 @@ CreateIndexNemesis:
   schema_changes: true
   sla: false
   supports_high_disk_utilization: false
-  target_pool: data_nodes
   topology_changes: false
   zero_node_changes: false
 DecommissionMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -262,14 +236,12 @@ DecommissionMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: false
-  target_pool: nodes
   topology_changes: true
   zero_node_changes: false
 DecommissionSeedNode:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -280,14 +252,12 @@ DecommissionSeedNode:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: false
-  target_pool: nodes
   topology_changes: true
   zero_node_changes: false
 DecommissionStreamingErrMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -304,7 +274,6 @@ DeleteByPartitionsMonkey:
   config_changes: false
   delete_rows: true
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -321,7 +290,6 @@ DeleteByRowsRangeMonkey:
   config_changes: false
   delete_rows: true
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -338,7 +306,6 @@ DeleteOverlappingRowRangesMonkey:
   config_changes: false
   delete_rows: true
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -355,7 +322,6 @@ DisableBinaryGossipExecuteMajorCompaction:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -372,7 +338,6 @@ DrainKubernetesNodeThenDecommissionAndAddScyllaNode:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: true
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -389,7 +354,6 @@ DrainKubernetesNodeThenReplaceScyllaNode:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: true
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -406,7 +370,6 @@ DrainerMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -417,14 +380,12 @@ DrainerMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: true
   zero_node_changes: false
 EnableDisableTableEncryptionAwsKmsProviderWithRotationMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -435,14 +396,12 @@ EnableDisableTableEncryptionAwsKmsProviderWithRotationMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 EnableDisableTableEncryptionAwsKmsProviderWithoutRotationMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -453,14 +412,12 @@ EnableDisableTableEncryptionAwsKmsProviderWithoutRotationMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 EndOfQuotaNemesis:
   config_changes: true
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -471,14 +428,12 @@ EndOfQuotaNemesis:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 EnospcAllNodesMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -489,14 +444,12 @@ EnospcAllNodesMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 EnospcMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -507,14 +460,12 @@ EnospcMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 GrowShrinkClusterNemesis:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -525,14 +476,12 @@ GrowShrinkClusterNemesis:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: data_nodes
   topology_changes: true
   zero_node_changes: false
 GrowShrinkZeroTokenNode:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -543,14 +492,12 @@ GrowShrinkZeroTokenNode:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: true
 HardRebootNodeMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -561,14 +508,12 @@ HardRebootNodeMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 IsolateNodeWithIptableRuleNemesis:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -579,14 +524,12 @@ IsolateNodeWithIptableRuleNemesis:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: true
   zero_node_changes: false
 IsolateNodeWithProcessSignalNemesis:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -597,14 +540,12 @@ IsolateNodeWithProcessSignalNemesis:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: true
   zero_node_changes: false
 LoadAndStreamMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -615,14 +556,12 @@ LoadAndStreamMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: data_nodes
   topology_changes: false
   zero_node_changes: false
 MajorCompactionMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -639,7 +578,6 @@ MemoryStressMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: false
@@ -650,14 +588,12 @@ MemoryStressMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 MgmtBackup:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -668,14 +604,12 @@ MgmtBackup:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: false
-  target_pool: data_nodes
   topology_changes: false
   zero_node_changes: false
 MgmtBackupSpecificKeyspaces:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -686,14 +620,12 @@ MgmtBackupSpecificKeyspaces:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: false
-  target_pool: data_nodes
   topology_changes: false
   zero_node_changes: false
 MgmtCorruptThenRepair:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -704,14 +636,12 @@ MgmtCorruptThenRepair:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: data_nodes
   topology_changes: false
   zero_node_changes: false
 MgmtRepair:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -722,14 +652,12 @@ MgmtRepair:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: data_nodes
   topology_changes: false
   zero_node_changes: false
 MgmtRestore:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -740,14 +668,12 @@ MgmtRestore:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: false
-  target_pool: data_nodes
   topology_changes: false
   zero_node_changes: false
 ModifyTableMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -764,7 +690,6 @@ MultipleHardRebootNodeMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -775,14 +700,12 @@ MultipleHardRebootNodeMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 NemesisSequence:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -799,7 +722,6 @@ NoCorruptRepairMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -816,7 +738,6 @@ NodeRestartWithResharding:
   config_changes: true
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -833,7 +754,6 @@ NodeTerminateAndReplace:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -844,14 +764,12 @@ NodeTerminateAndReplace:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: true
   zero_node_changes: true
 NodeToolCleanupMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -862,14 +780,12 @@ NodeToolCleanupMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 OperatorNodeReplace:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -886,7 +802,6 @@ OperatorNodetoolFlushAndReshard:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -900,12 +815,9 @@ OperatorNodetoolFlushAndReshard:
   topology_changes: false
   zero_node_changes: false
 PauseLdapNemesis:
-  additional_configs:
-  - configurations/ldap-authorization.yaml
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -916,18 +828,12 @@ PauseLdapNemesis:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 RandomInterruptionNetworkMonkey:
-  additional_configs:
-  - configurations/network_config/two_interfaces.yaml
-  additional_params:
-    ip_ssh_connections: public
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -938,14 +844,12 @@ RandomInterruptionNetworkMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 RebuildStreamingErrMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -962,7 +866,6 @@ RefreshBigMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -973,14 +876,12 @@ RefreshBigMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 RefreshMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -991,14 +892,12 @@ RefreshMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 RejectInterNodeNetworkMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: false
@@ -1009,14 +908,12 @@ RejectInterNodeNetworkMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 RejectNodeExporterNetworkMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1027,14 +924,12 @@ RejectNodeExporterNetworkMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 RejectThriftNetworkMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1045,14 +940,12 @@ RejectThriftNetworkMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 RemoveServiceLevelMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1069,7 +962,6 @@ RepairStreamingErrMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1086,7 +978,6 @@ ResetLocalSchemaMonkey:
   config_changes: true
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: false
@@ -1097,14 +988,12 @@ ResetLocalSchemaMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 RestartThenRepairNodeMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -1115,16 +1004,13 @@ RestartThenRepairNodeMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 RollingRestartConfigChangeInternodeCompression:
   config_changes: true
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
-  full_cluster_restart: true
   has_steady_run: false
   kubernetes: false
   limited: false
@@ -1134,14 +1020,12 @@ RollingRestartConfigChangeInternodeCompression:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 ScyllaKillMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -1152,14 +1036,12 @@ ScyllaKillMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 SerialRestartOfElectedTopologyCoordinatorNemesis:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1170,16 +1052,12 @@ SerialRestartOfElectedTopologyCoordinatorNemesis:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: true
   zero_node_changes: false
 SlaDecreaseSharesDuringLoad:
-  additional_configs:
-  - configurations/nemesis/additional_configs/sla_config.yaml
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1193,12 +1071,9 @@ SlaDecreaseSharesDuringLoad:
   topology_changes: false
   zero_node_changes: false
 SlaIncreaseSharesByAttachAnotherSlDuringLoad:
-  additional_configs:
-  - configurations/nemesis/additional_configs/sla_config.yaml
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1212,12 +1087,9 @@ SlaIncreaseSharesByAttachAnotherSlDuringLoad:
   topology_changes: false
   zero_node_changes: false
 SlaIncreaseSharesDuringLoad:
-  additional_configs:
-  - configurations/nemesis/additional_configs/sla_config.yaml
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1231,12 +1103,9 @@ SlaIncreaseSharesDuringLoad:
   topology_changes: false
   zero_node_changes: false
 SlaMaximumAllowedSlsWithMaxSharesDuringLoad:
-  additional_configs:
-  - configurations/nemesis/additional_configs/sla_config.yaml
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1250,12 +1119,9 @@ SlaMaximumAllowedSlsWithMaxSharesDuringLoad:
   topology_changes: false
   zero_node_changes: false
 SlaReplaceUsingDetachDuringLoad:
-  additional_configs:
-  - configurations/nemesis/additional_configs/sla_config.yaml
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1269,12 +1135,9 @@ SlaReplaceUsingDetachDuringLoad:
   topology_changes: false
   zero_node_changes: false
 SlaReplaceUsingDropDuringLoad:
-  additional_configs:
-  - configurations/nemesis/additional_configs/sla_config.yaml
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1291,7 +1154,6 @@ SnapshotOperations:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -1302,14 +1164,12 @@ SnapshotOperations:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 SoftRebootNodeMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -1320,14 +1180,12 @@ SoftRebootNodeMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 SslHotReloadingNemesis:
   config_changes: true
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1338,14 +1196,12 @@ SslHotReloadingNemesis:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 StartStopCleanupCompaction:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1362,7 +1218,6 @@ StartStopMajorCompaction:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1379,7 +1234,6 @@ StartStopScrubCompaction:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1396,7 +1250,6 @@ StartStopValidationCompaction:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1410,14 +1263,9 @@ StartStopValidationCompaction:
   topology_changes: false
   zero_node_changes: false
 StopStartInterfacesNetworkMonkey:
-  additional_configs:
-  - configurations/network_config/two_interfaces.yaml
-  additional_params:
-    ip_ssh_connections: public
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1428,14 +1276,12 @@ StopStartInterfacesNetworkMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 StopStartMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -1446,14 +1292,12 @@ StopStartMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 StopWaitStartMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -1464,14 +1308,12 @@ StopWaitStartMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: true
 SwitchBetweenPasswordAuthAndSaslauthdAuth:
   config_changes: true
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1488,7 +1330,6 @@ TerminateAndRemoveNodeMonkey:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1499,14 +1340,12 @@ TerminateAndRemoveNodeMonkey:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: false
-  target_pool: nodes
   topology_changes: true
   zero_node_changes: false
 TerminateKubernetesHostThenDecommissionAndAddScyllaNode:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: true
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -1523,7 +1362,6 @@ TerminateKubernetesHostThenReplaceScyllaNode:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: true
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -1540,7 +1378,6 @@ ToggleAuditNemesisSyslog:
   config_changes: true
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: false
@@ -1557,7 +1394,6 @@ ToggleCDCMonkey:
   config_changes: true
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: false
@@ -1574,7 +1410,6 @@ ToggleGcModeMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -1588,12 +1423,9 @@ ToggleGcModeMonkey:
   topology_changes: false
   zero_node_changes: false
 ToggleLdapConfiguration:
-  additional_configs:
-  - configurations/ldap-authorization.yaml
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: false
@@ -1604,14 +1436,12 @@ ToggleLdapConfiguration:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 ToggleTableIcsMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -1628,7 +1458,6 @@ TopPartitions:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: false
   has_steady_run: false
   kubernetes: true
@@ -1639,14 +1468,12 @@ TopPartitions:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: nodes
   topology_changes: false
   zero_node_changes: false
 TruncateLargeParititionMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -1663,7 +1490,6 @@ TruncateMonkey:
   config_changes: false
   delete_rows: false
   disruptive: false
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -1680,7 +1506,6 @@ ValidateHintedHandoffShortDowntime:
   config_changes: false
   delete_rows: false
   disruptive: true
-  exclusive: false
   free_tier_set: true
   has_steady_run: false
   kubernetes: true
@@ -1691,6 +1516,5 @@ ValidateHintedHandoffShortDowntime:
   schema_changes: false
   sla: false
   supports_high_disk_utilization: true
-  target_pool: data_nodes
   topology_changes: false
   zero_node_changes: false
