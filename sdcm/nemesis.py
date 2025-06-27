@@ -1916,6 +1916,14 @@ class Nemesis(NemesisFlags):
         assert self.disruptions_list, "no nemesis were selected"
         self.execute_disrupt_method(disrupt_method=next(self.infinite_cycle))
 
+    def disrupt_standard_repair(self):
+        """
+        Run a standard repair process on the target node.
+        This method is used to ensure that the node is in a consistent state
+        and that all data is properly replicated across the cluster.
+        """
+        self.repair_nodetool_repair()
+
     # End of Nemesis running code
     @latency_calculator_decorator(legend="Run repair process with nodetool repair")
     def repair_nodetool_repair(self, node=None, publish_event=True):
@@ -6851,3 +6859,24 @@ class IsolateNodeWithIptableRuleNemesis(Nemesis):
 
     def disrupt(self):
         self.disrupt_refuse_connection_with_block_scylla_ports_on_banned_node()
+
+
+class RepairMonkey(Nemesis):
+    """
+    Selected number of nemesis that are focused on repair
+    """
+    disruptive = True
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.disruptions_list = self.build_disruptions_by_name([
+            "disrupt_abort_repair",
+            "disrupt_destroy_data_then_repair",
+            "disrupt_no_corrupt_repair",
+            "disrupt_restart_then_repair_node",
+            "disrupt_standard_repair"
+        ])
+        self.disruptions_list = self.shuffle_list_of_disruptions(self.disruptions_list)
+
+    def disrupt(self):
+        self.call_next_nemesis()
