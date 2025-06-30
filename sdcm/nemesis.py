@@ -6883,7 +6883,7 @@ class RepairMonkey(Nemesis):
             # "disrupt_destroy_data_then_repair",
             # "disrupt_no_corrupt_repair",
             # "disrupt_restart_then_repair_node",
-            "disrupt_standard_repair"
+            "disrupt_mgmt_repair_cli"
         ])
         self.disruptions_list = self.shuffle_list_of_disruptions(self.disruptions_list)
 
