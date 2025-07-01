@@ -27,8 +27,8 @@ client_encrypt: true
 pre_create_schema: True
 sstable_size: 100
 
-workload_name: 'longevity-100gb-repair'
-use_hdrhistogram: True
+#workload_name: 'longevity-100gb-repair'
+#use_hdrhistogram: True
 
 hinted_handoff: 'enabled'
 parallel_node_operations: true
