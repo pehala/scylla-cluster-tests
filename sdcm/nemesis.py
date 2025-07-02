@@ -1916,6 +1916,7 @@ class Nemesis(NemesisFlags):
         assert self.disruptions_list, "no nemesis were selected"
         self.execute_disrupt_method(disrupt_method=next(self.infinite_cycle))
 
+    @target_data_nodes
     def disrupt_standard_repair(self):
         """
         Run a standard repair process on the target node.
@@ -6883,7 +6884,7 @@ class RepairMonkey(Nemesis):
             # "disrupt_destroy_data_then_repair",
             # "disrupt_no_corrupt_repair",
             # "disrupt_restart_then_repair_node",
-            "disrupt_mgmt_repair_cli"
+            "disrupt_standard_repair"
         ])
         self.disruptions_list = self.shuffle_list_of_disruptions(self.disruptions_list)
 
