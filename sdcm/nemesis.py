@@ -42,6 +42,8 @@ from cassandra.query import SimpleStatement
 from cassandra.cluster import NoHostAvailable, OperationTimedOut
 from invoke import UnexpectedExit
 from elasticsearch.exceptions import ConnectionTimeout as ElasticSearchConnectionTimeout
+
+from argus.client.generic_result import ColumnMetadata, ResultType, StaticGenericResultTable, Status
 from argus.common.enums import NemesisStatus
 from sdcm.nemesis_registry import NemesisRegistry
 from sdcm.utils.action_logger import get_action_logger
@@ -75,6 +77,7 @@ from sdcm.nemesis_publisher import NemesisElasticSearchPublisher
 from sdcm.prometheus import nemesis_metrics_obj
 from sdcm.provision.scylla_yaml import SeedProvider
 from sdcm.provision.helpers.certificate import update_certificate, TLSAssets
+from sdcm.argus_results import submit_results_to_argus
 from sdcm.remote.libssh2_client.exceptions import UnexpectedExit as Libssh2UnexpectedExit
 from sdcm.sct_events import Severity
 from sdcm.sct_events.database import DatabaseLogEvent
@@ -293,6 +296,7 @@ class Nemesis(NemesisFlags):
         self._target_node_pool_type = NEMESIS_TARGET_POOLS.data_nodes
         self.hdr_tags = []
         self.log.debug('Instantiated %s nemesis with %d seed', self.__class__.__name__, self.nemesis_seed)
+        self.cycle = 1
 
     def _init_num_deletions_factor(self):
         # num_deletions_factor is a numeric divisor. It's a factor by which the available-partitions-for-deletion
@@ -1916,6 +1920,15 @@ class Nemesis(NemesisFlags):
         assert self.disruptions_list, "no nemesis were selected"
         self.execute_disrupt_method(disrupt_method=next(self.infinite_cycle))
 
+    class TimerResult(StaticGenericResultTable):
+        class Meta:
+            name = "Timer"
+            description = "The duration of the operation named in the row name"
+            Columns = [
+                ColumnMetadata(name="bytes", unit="bytet", type=ResultType.INTEGER, higher_is_better=False),
+                ColumnMetadata(name="duration", unit="HH:MM:SS", type=ResultType.DURATION, higher_is_better=False),
+            ]
+
     @target_data_nodes
     def disrupt_standard_repair(self):
         """
@@ -1923,9 +1936,24 @@ class Nemesis(NemesisFlags):
         This method is used to ensure that the node is in a consistent state
         and that all data is properly replicated across the cluster.
         """
+        space_used_query = f'sum(node_filesystem_avail_bytes{{mountpoint=~"/var/lib/scylla", instance=~"{self.target_node.private_ip_address}"}})'
+        start = time.time()
+        results = PrometheusDBStats(host=self.monitoring_set.nodes[0].external_address).query(
+            query=space_used_query, start=start, end=start)
+        self.log.info(f"Prometheus results space: {results[0]}")
         self.repair_nodetool_repair()
+        elapsed = int(time.time() - start)
+
+        argus_client = self.target_node.test_config.argus_client()
+
+        data_table = self.TimerResult()
+        data_table.add_result(column="duration", row=f"{self.cycle}", value=elapsed, status=Status.UNSET)
+        data_table.add_result(column="bytes", row=f"{self.cycle}", value=results[0], status=Status.UNSET)
+        submit_results_to_argus(argus_client, data_table)
+        self.cycle += 1
 
     # End of Nemesis running code
+
     @latency_calculator_decorator(legend="Run repair process with nodetool repair")
     def repair_nodetool_repair(self, node=None, publish_event=True):
         node = node if node else self.target_node
