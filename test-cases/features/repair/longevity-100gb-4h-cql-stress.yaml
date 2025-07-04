@@ -3,8 +3,8 @@ test_duration: 800
 prepare_write_cmd:  "cql-stress-cassandra-stress write cl=QUORUM n=122914560 -schema 'replication(strategy=NetworkTopologyStrategy,replication_factor=3) compaction(strategy=SizeTieredCompactionStrategy)' -mode cql3 native -rate threads=80 -pop seq=1..122914560 -col 'n=FIXED(10) size=FIXED(512)' -log interval=15"
 
 
-stress_cmd: ["cql-stress-cassandra-stress write cl=QUORUM duration=600m -schema 'replication(strategy=NetworkTopologyStrategy,replication_factor=3) compaction(strategy=SizeTieredCompactionStrategy)' -mode cql3 native -rate threads=40 -pop seq=1..122914560 -col 'n=FIXED(10) size=FIXED(512)' -log interval=15 -pop 'dist=gauss(1..162500000,81250000,1625000)'",
-             "cql-stress-cassandra-stress read  cl=QUORUM duration=600m -schema 'replication(strategy=NetworkTopologyStrategy,replication_factor=3) compaction(strategy=SizeTieredCompactionStrategy)' -mode cql3 native -rate threads=40 -pop seq=1..122914560 -col 'n=FIXED(10) size=FIXED(512)' -log interval=15 -pop 'dist=gauss(1..162500000,81250000,1625000)'"
+stress_cmd: ["cassandra-stress write no-warmup cl=QUORUM duration=600m -schema 'replication(strategy=NetworkTopologyStrategy,replication_factor=3) compaction(strategy=SizeTieredCompactionStrategy)' -mode cql3 native -rate threads=40 -pop seq=1..122914560 -col 'n=FIXED(10) size=FIXED(512)' -log interval=15 -pop 'dist=gauss(1..122914560,81250000,1625000)'",
+             "cassandra-stress read  no-warmup cl=QUORUM duration=600m -schema 'replication(strategy=NetworkTopologyStrategy,replication_factor=3) compaction(strategy=SizeTieredCompactionStrategy)' -mode cql3 native -rate threads=40 -pop seq=1..122914560 -col 'n=FIXED(10) size=FIXED(512)' -log interval=15 -pop 'dist=gauss(1..122914560,81250000,1625000)'"
              ]
 
 n_db_nodes: 6
