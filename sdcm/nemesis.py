@@ -1936,21 +1936,21 @@ class Nemesis(NemesisFlags):
         This method is used to ensure that the node is in a consistent state
         and that all data is properly replicated across the cluster.
         """
-        space_used_query = f'sum(node_filesystem_avail_bytes{{mountpoint=~"/var/lib/scylla", instance=~"{self.target_node.private_ip_address}"}})'
-        start = time.time()
-        results = PrometheusDBStats(host=self.monitoring_set.nodes[0].external_address).query(
-            query=space_used_query, start=start, end=start)
-        self.log.info(f"Prometheus results space: {results[0]}")
+        # space_used_query = f'sum(node_filesystem_avail_bytes{{mountpoint=~"/var/lib/scylla", instance=~"{self.target_node.private_ip_address}"}})'
+        # start = time.time()
+        # results = PrometheusDBStats(host=self.monitoring_set.nodes[0].external_address).query(
+        #     query=space_used_query, start=start, end=start)
+        # self.log.info(f"Prometheus results space: {results[0]}")
         self.repair_nodetool_repair()
-        elapsed = int(time.time() - start)
-
-        argus_client = self.target_node.test_config.argus_client()
-
-        data_table = self.TimerResult()
-        data_table.add_result(column="duration", row=f"{self.cycle}", value=elapsed, status=Status.UNSET)
-        data_table.add_result(column="bytes", row=f"{self.cycle}", value=results[0], status=Status.UNSET)
-        submit_results_to_argus(argus_client, data_table)
-        self.cycle += 1
+        # elapsed = int(time.time() - start)
+        #
+        # argus_client = self.target_node.test_config.argus_client()
+        #
+        # data_table = self.TimerResult()
+        # data_table.add_result(column="duration", row=f"{self.cycle}", value=elapsed, status=Status.UNSET)
+        # data_table.add_result(column="bytes", row=f"{self.cycle}", value=results[0], status=Status.UNSET)
+        # submit_results_to_argus(argus_client, data_table)
+        # self.cycle += 1
 
     # End of Nemesis running code
 
