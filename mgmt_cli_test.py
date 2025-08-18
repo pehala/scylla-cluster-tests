@@ -1790,11 +1790,10 @@ class ManagerRestoreBenchmarkTests(ManagerTestFunctionsMixIn):
             self.log.info("Grant admin permissions to scylla_manager user")
             self.db_cluster.nodes[0].run_cqlsh(cmd="grant scylla_admin to scylla_manager")
 
-        self.log.info("Restoring the schema")
-        self.restore_backup_with_task(mgr_cluster=mgr_cluster, snapshot_tag=snapshot_data.tag, timeout=600,
-                                      restore_schema=True, location_list=locations, object_storage_method=object_storage_method)
-
         if restore_outside_manager:
+            self.log.info("Restoring the schema")
+            self.restore_backup_with_task(mgr_cluster=mgr_cluster, snapshot_tag=snapshot_data.tag, timeout=600,
+                                          restore_schema=True, location_list=locations)
             self.log.info("Restoring the data outside the Manager")
             with ExecutionTimer() as timer:
                 self.restore_backup_without_manager(
@@ -1809,8 +1808,9 @@ class ManagerRestoreBenchmarkTests(ManagerTestFunctionsMixIn):
             self.log.info("Restoring the data with standard L&S approach")
             extra_params = self.get_restore_extra_parameters()
             task = self.restore_backup_with_task(mgr_cluster=mgr_cluster, snapshot_tag=snapshot_data.tag,
-                                                 timeout=snapshot_data.exp_timeout, restore_data=True,
-                                                 location_list=locations, extra_params=extra_params)
+                                                 timeout=snapshot_data.exp_timeout,
+                                                 location_list=locations, extra_params=extra_params,
+                                                 object_storage_method=object_storage_method)
             restore_time = task.duration
             manager_version_timestamp = mgr_cluster.sctool.client_version_timestamp
             self._send_restore_results_to_argus(task, manager_version_timestamp, dataset_label=snapshot_name)
@@ -1832,7 +1832,8 @@ class ManagerRestoreBenchmarkTests(ManagerTestFunctionsMixIn):
         """
         if reuse_snapshot_name := self.params.get('mgmt_reuse_backup_snapshot_name'):
             self.log.info("Executing test_restore_from_precreated_backup with method Native...")
-            self.test_restore_from_precreated_backup(reuse_snapshot_name, object_storage_method=ObjectStorageUploadMode.NATIVE)
+            self.test_restore_from_precreated_backup(
+                reuse_snapshot_name, object_storage_method=ObjectStorageUploadMode.NATIVE)
         else:
             self.log.info("Executing test_backup_and_restore_only_data with method Native...")
             self.test_backup_and_restore_only_data(object_storage_method=ObjectStorageUploadMode.NATIVE)
@@ -1845,7 +1846,8 @@ class ManagerRestoreBenchmarkTests(ManagerTestFunctionsMixIn):
         """
         if reuse_snapshot_name := self.params.get('mgmt_reuse_backup_snapshot_name'):
             self.log.info("Executing test_restore_from_precreated_backup with method rClone...")
-            self.test_restore_from_precreated_backup(reuse_snapshot_name, object_storage_method=ObjectStorageUploadMode.RCLONE)
+            self.test_restore_from_precreated_backup(
+                reuse_snapshot_name, object_storage_method=ObjectStorageUploadMode.RCLONE)
         else:
             self.log.info("Executing test_backup_and_restore_only_data with method rClone...")
             self.test_backup_and_restore_only_data(object_storage_method=ObjectStorageUploadMode.RCLONE)
@@ -1930,7 +1932,8 @@ class ManagerOneToOneRestore(ManagerTestFunctionsMixIn):
             cs_verify_cmds = self.build_cs_read_cmd_from_snapshot_details(snapshot_data)
             self.run_and_verify_stress_in_threads(cs_cmds=cs_verify_cmds)
         else:
-            self.log.info("Skipping verification read stress because of the test or snapshot configuration")
+            self.log.info(f"Skipping verification read stress because of the test or snapshot configuration,"
+                          f" mgmt_skip_post_restore_stress_read: {self.params.get('mgmt_skip_post_restore_stress_read')}, snapshot prohibit_verification_read: {snapshot_data.prohibit_verification_read}")
 
 
 class ManagerReportType(Enum):
