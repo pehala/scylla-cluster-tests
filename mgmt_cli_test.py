@@ -1777,6 +1777,9 @@ class ManagerRestoreBenchmarkTests(ManagerTestFunctionsMixIn):
         self.log.info("Define snapshot details and location")
         snapshot_data = self.get_snapshot_data(snapshot_name)
         locations = snapshot_data.locations
+        self.log.info("Restoring the schema")
+        self.restore_backup_with_task(mgr_cluster=mgr_cluster, snapshot_tag=snapshot_data.tag, timeout=600,
+                                      restore_schema=True, location_list=locations)
 
         if self.params.get("use_cloud_manager"):
             self.log.info("Delete scheduled backup task to not interfere")
@@ -1791,9 +1794,6 @@ class ManagerRestoreBenchmarkTests(ManagerTestFunctionsMixIn):
             self.db_cluster.nodes[0].run_cqlsh(cmd="grant scylla_admin to scylla_manager")
 
         if restore_outside_manager:
-            self.log.info("Restoring the schema")
-            self.restore_backup_with_task(mgr_cluster=mgr_cluster, snapshot_tag=snapshot_data.tag, timeout=600,
-                                          restore_schema=True, location_list=locations)
             self.log.info("Restoring the data outside the Manager")
             with ExecutionTimer() as timer:
                 self.restore_backup_without_manager(
@@ -1808,6 +1808,7 @@ class ManagerRestoreBenchmarkTests(ManagerTestFunctionsMixIn):
             self.log.info("Restoring the data with standard L&S approach")
             extra_params = self.get_restore_extra_parameters()
             task = self.restore_backup_with_task(mgr_cluster=mgr_cluster, snapshot_tag=snapshot_data.tag,
+                                                 restore_data=True,
                                                  timeout=snapshot_data.exp_timeout,
                                                  location_list=locations, extra_params=extra_params,
                                                  object_storage_method=object_storage_method)
