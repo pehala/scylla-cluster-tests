@@ -189,7 +189,27 @@ sizes:  # size of backed up dataset in GB
       replication: "NetworkTopologyStrategy"
       rf: 3
     one_one_restore_params: None
-
+  2tb_1t_ics_no_encryption:
+    # tag: "sm_20250807135410UTC" # Tablets
+    tag: "sm_20250828093615UTC" # Vnodes
+    locations:
+      - "s3:manager-backup-tests-permanent-snapshots-us-east-1"
+    exp_timeout: 57600  # 16 hours
+    scylla_version: "2025.3"
+    number_of_nodes: 3
+    prohibit_verification_read: false
+    dataset:
+      schema:
+        keyspace1:
+          - standard1: 2048
+      num_of_rows: 2147483648
+      compaction: "IncrementalCompactionStrategy"
+      cl: "ONE"
+      col_size: 1024
+      col_n: 1
+      replication: "NetworkTopologyStrategy"
+      rf: 3
+    one_one_restore_params: None
   ### Cloud(Siren) cluster backups
 
   50gb_1t_ics_cloud_single:
