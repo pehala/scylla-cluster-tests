@@ -23,6 +23,7 @@ from sdcm.stress.latte_thread import (
     get_latte_operation_type,
 )
 from sdcm.utils.decorators import timeout
+from unit_tests.conftest import ssl_dir_key
 from unit_tests.dummy_remote import LocalLoaderSetDummy
 
 pytestmark = [
@@ -119,6 +120,11 @@ def test_04_latte_run_client_encrypt(request, docker_scylla, params):
     params['enable_argus'] = False
 
     loader_set = LocalLoaderSetDummy(params=params)
+
+    # dedicated SSL certs directory for the test, to avoid conflicts during parallel tests execution
+    if ssl_dir := request.node.stash.get(ssl_dir_key, None):
+        for loader_node in loader_set.nodes:
+            loader_node.__class__.ssl_conf_dir = property(lambda self: ssl_dir)
 
     cmd = ("latte run -d 10s docker/latte/workloads/workload.rn --generate-report")
 
