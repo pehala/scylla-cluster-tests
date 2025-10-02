@@ -17,7 +17,7 @@ import collections
 import shutil
 import subprocess
 import uuid
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -48,8 +48,6 @@ from unit_tests.lib.alternator_utils import ALTERNATOR_PORT
 
 
 pytest_plugins = ["pytester"]
-
-ssl_dir_key = pytest.StashKey[Path]()
 
 
 @contextmanager
@@ -97,7 +95,22 @@ def prom_address():
     yield start_metrics_server()
 
 
-def configure_scylla_node(docker_scylla_args: dict, params, request: pytest.FixtureRequest):  # noqa: PLR0914
+@contextmanager
+def create_ssl_dir(test_id: str):
+    ssl_dir = (Path(__file__).parent.parent / 'data_dir' / f'ssl_conf_{test_id}').absolute()
+    ssl_dir.mkdir(parents=True, exist_ok=True)
+
+    localhost = LocalHost(user_prefix='unit_test_fake_user', test_id='unit_test_fake_test_id')
+    create_ca(localhost)
+
+    for file_path in Path(get_data_dir_path('ssl_conf')).glob('*'):
+        if file_path.is_file():
+            shutil.copy2(file_path, ssl_dir)
+    yield ssl_dir
+    shutil.rmtree(ssl_dir, ignore_errors=True)
+
+
+def configure_scylla_node(docker_scylla_args: dict, params, ssl_dir: Path | None = None):  # noqa: PLR0914
     ssl = docker_scylla_args.get('ssl')
     docker_network = docker_scylla_args.get('docker_network')
     # make sure the path to the file is base on the host path, and not as the docker internal path i.e. /sct/
@@ -111,25 +124,13 @@ def configure_scylla_node(docker_scylla_args: dict, params, request: pytest.Fixt
     default_image = "docker.io/scylladb/scylla-nightly:2025.2.0-dev-0.20250302.0343235aa269"
     docker_version = docker_scylla_args.get('scylla_docker_image') or docker_scylla_args.get('image', default_image)
 
+    test_id = str(uuid.uuid4())[:8]
     if not params.get('user_prefix'):
-        params['user_prefix'] = f'unit-test-{str(uuid.uuid4())[:8]}'
+        params['user_prefix'] = f'unit-test-{test_id}'
 
     cluster = LocalScyllaClusterDummy(params=params)
 
-    ssl_mount = ''
-    if ssl:
-        test_uuid = uuid.uuid4().hex[:8]
-        ssl_dir = (Path(__file__).parent.parent / 'data_dir' / f'ssl_conf_{test_uuid}').absolute()
-        ssl_dir.mkdir(parents=True, exist_ok=True)
-
-        localhost = LocalHost(user_prefix='unit_test_fake_user', test_id='unit_test_fake_test_id')
-        create_ca(localhost)
-
-        for file_path in Path(get_data_dir_path('ssl_conf')).glob('*'):
-            if file_path.is_file():
-                shutil.copy2(file_path, ssl_dir)
-
-        ssl_mount = f' -v {ssl_dir}:{SCYLLA_SSL_CONF_DIR}:z'
+    ssl_mount = f' -v {ssl_dir}:{SCYLLA_SSL_CONF_DIR}:z' if ssl else ''
 
     env_vars = '-e VECTOR_SEARCH_TEST=true' if docker_scylla_args.get('scylla_docker_image') else ''
     extra_docker_opts = (f'-p {ALTERNATOR_PORT} -p {BaseNode.CQL_PORT} --cpus="1" -v {entryfile_path}:/entry.sh:z'
@@ -145,14 +146,13 @@ def configure_scylla_node(docker_scylla_args: dict, params, request: pytest.Fixt
                           command_line=f"--smp 1 {alternator_flags}{seeds}",
                           extra_docker_opts=extra_docker_opts, docker_network=docker_network)
 
-    if ssl:
+    if ssl_dir:
         create_certificate(ssl_dir / TLSAssets.DB_CLIENT_FACING_CERT, ssl_dir / TLSAssets.DB_CLIENT_FACING_KEY,
                            cname="scylladb", ca_cert_file=CA_CERT_FILE, ca_key_file=CA_KEY_FILE,
                            ip_addresses=[scylla.internal_ip_address], dns_names=[scylla.public_dns_name])
         create_certificate(ssl_dir / TLSAssets.CLIENT_CERT, ssl_dir / TLSAssets.CLIENT_KEY,
                            cname="scylladb", ca_cert_file=CA_CERT_FILE, ca_key_file=CA_KEY_FILE)
 
-        request.node.stash[ssl_dir_key] = ssl_dir
         scylla.__class__.ssl_conf_dir = property(lambda self: ssl_dir)
 
     cluster.nodes = [scylla]
@@ -188,10 +188,11 @@ def fixture_docker_scylla(request: pytest.FixtureRequest, params):  # noqa: PLR0
     docker_scylla_args = {}
     if test_marker := request.node.get_closest_marker("docker_scylla_args"):
         docker_scylla_args = test_marker.kwargs
-    scylla = configure_scylla_node(docker_scylla_args, params, request)
-    yield scylla
-
-    scylla.kill()
+    ctx = create_ssl_dir(test_id=str(uuid.uuid4())[:8]) if docker_scylla_args.get('ssl') else nullcontext()
+    with ctx as ssl_dir:
+        scylla = configure_scylla_node(docker_scylla_args, params, ssl_dir=ssl_dir)
+        yield scylla
+        scylla.kill()
 
 
 @pytest.fixture(name='docker_scylla_2', scope='function')
@@ -200,10 +201,11 @@ def fixture_docker_2_scylla(request: pytest.FixtureRequest, docker_scylla, param
     if test_marker := request.node.get_closest_marker("docker_scylla_args"):
         docker_scylla_args = test_marker.kwargs
     docker_scylla_args['seeds'] = docker_scylla.ip_address
-    scylla = configure_scylla_node(docker_scylla_args, params, request)
-    yield scylla
-
-    scylla.kill()
+    ctx = create_ssl_dir(test_id=str(uuid.uuid4())[:8]) if docker_scylla_args.get('ssl') else nullcontext()
+    with ctx as ssl_dir:
+        scylla = configure_scylla_node(docker_scylla_args, params, ssl_dir=ssl_dir)
+        yield scylla
+        scylla.kill()
 
 
 @pytest.fixture(name='docker_vector_store', scope='function')
@@ -320,14 +322,6 @@ def fixture_params(request: pytest.FixtureRequest, monkeypatch):
 @pytest.fixture(scope='function', autouse=True)
 def fixture_cleanup_continuous_events_registry():
     ContinuousEventsRegistry().cleanup_registry()
-
-
-@pytest.fixture(scope='function', autouse=True)
-def fixture_cleanup_ssl_directories(request: pytest.FixtureRequest):
-    yield
-
-    if ssl_dir := request.node.stash.get(ssl_dir_key, None):
-        shutil.rmtree(ssl_dir, ignore_errors=True)
 
 
 def pytest_sessionfinish():
