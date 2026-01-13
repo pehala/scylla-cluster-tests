@@ -31,21 +31,7 @@ instance_type_loader: 'c6i.large'
 
 k8s_minio_storage_size: 1024Gi
 
-nemesis_class_name:
-  - 'SisyphusMonkey'
-  - 'SisyphusMonkey'
-  - 'SisyphusMonkey'
-  - 'SisyphusMonkey'
-  - 'SisyphusMonkey'
-  - 'NoOpMonkey'
-  - 'NoOpMonkey'
-  - 'NoOpMonkey'
-  - 'NoOpMonkey'
-  - 'NoOpMonkey'
-  - 'NoOpMonkey'
-  - 'NoOpMonkey'
-  - 'NoOpMonkey'
-  - 'NoOpMonkey'
+nemesis_class_name: "SisyphusMonkey:5 NoOpMonkey:9"
 nemesis_selector:
   - "free_tier_set"
   - "free_tier_set"
@@ -61,7 +47,6 @@ nemesis_selector:
   - ""
   - ""
   - ""
-nemesis_seed: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14']
 nemesis_during_prepare: false
 
 user_prefix: 'long-scylla-operator-12h-multitenant-14-clients'
