@@ -1,1 +1,14 @@
+# .git-blame-ignore-revs
+#
+# This file contains a list of commit SHAs that should be ignored by git blame.
+# It's used to exclude formatting commits, linting changes, and other bulk changes
+# that don't affect the logic of the code.
+#
+# To configure git to use this file, run:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# Format: One commit SHA (full 40-character hash) per line
+# Lines starting with '#' are comments
+#
+# Commits added by automation will be listed below:
 61ae5445854da17d937faec2a9deea07340838dc
