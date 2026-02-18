@@ -181,7 +181,7 @@ class SlaUtils:
         # for node_ip in db_cluster.get_node_private_ips():
         for node in db_cluster.nodes:
             # If Scylla is not running on the node - do not perform validation
-            if not (node.jmx_up() and node.db_up()):
+            if not node.db_up():
                 continue
 
             node_ip = node.private_ip_address

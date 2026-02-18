@@ -207,7 +207,6 @@ class NodeBootstrapAbortManager:
 
     def _rebootstrap_node(self):
         self.bootstrap_node.start_scylla_server(verify_up_timeout=3600, verify_down=True)
-        self.bootstrap_node.start_scylla_jmx()
         self.db_cluster.check_nodes_up_and_normal(nodes=[self.bootstrap_node], verification_node=self.verification_node)
         self._set_wait_stop_event()
 

@@ -313,7 +313,6 @@ class SSHScyllaSystemdLogger(SSHLoggerBase):
             "-u scylla-image-setup.service "
             "-u scylla-io-setup.service "
             "-u scylla-server.service "
-            "-u scylla-jmx.service "
             "-u scylla-housekeeping-restart.service "
             "-u scylla-housekeeping-daily.service"
         )

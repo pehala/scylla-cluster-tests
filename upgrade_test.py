@@ -145,6 +145,20 @@ def recover_conf(node):
         )
 
 
+def jmx_up(node):
+    if not node.is_service_exists(service_name="scylla-jmx"):
+        return True
+    return (
+        node.remoter.run(
+            f"{node.systemctl} is-active scylla-jmx.service && "
+            f"{node.systemctl} status scylla-jmx.service | grep 'JMX is enabled to receive remote connections on port'",
+            timeout=10,
+            ignore_status=True,
+        ).return_code
+        == 0
+    )
+
+
 class UpgradeTest(FillDatabaseData, loader_utils.LoaderUtilsMixin):
     """
     Test a Scylla cluster upgrade.
@@ -1520,7 +1534,11 @@ class UpgradeTest(FillDatabaseData, loader_utils.LoaderUtilsMixin):
 
     def wait_till_jmx_on_all_nodes(self):
         for node in self.db_cluster.nodes:
-            node.wait_jmx_up(timeout=300)
+            if not node.is_service_exists(service_name="scylla-jmx"):
+                return
+
+            text = "%s: Waiting for JMX service to be up" % node.name
+            wait.wait_for(func=lambda: jmx_up(node), step=60, text=text, timeout=300, throw_exc=True)
 
     def count_log_errors(self, search_pattern, step, search_for_idx_token_error=True):
         schema_load_error_num = 0

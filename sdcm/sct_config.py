@@ -2169,12 +2169,6 @@ class SCTConfiguration(dict):
             help="scylla sub option of server_encryption_options: internode_encryption",
         ),
         dict(
-            name="jmx_heap_memory",
-            env="SCT_JMX_HEAP_MEMORY",
-            type=int,
-            help="The total size of the memory allocated to JMX. Values in MB, so for 1GB enter 1024(MB)",
-        ),
-        dict(
             name="store_perf_results",
             env="SCT_STORE_PERF_RESULTS",
             type=boolean,

@@ -571,10 +571,8 @@ class TestStatsMixin(Stats):
                 versions_output = node.remoter.run(version_cmd).stdout.splitlines()
                 for line in versions_output:
                     for package in [
-                        "scylla-jmx",
                         "scylla-server",
                         "scylla-tools",
-                        "scylla-enterprise-jmx",
                         "scylla-enterprise-server",
                         "scylla-enterprise-tools",
                     ]:

@@ -878,7 +878,7 @@ class ScyllaLogCollector(LogCollector):
             name="system.log",
             command="sudo journalctl --no-tail --no-pager -u scylla-ami-setup.service "
             "-u scylla-image-setup.service -u scylla-io-setup.service -u scylla-server.service "
-            "-u scylla-jmx.service -u scylla-housekeeping-restart.service "
+            "-u scylla-housekeeping-restart.service "
             "-u scylla-housekeeping-daily.service -o short-precise",
             search_locally=True,
         ),
@@ -1029,7 +1029,7 @@ class MonitorLogCollector(LogCollector):
         ),
         FileLog(
             name="manager_scylla_backend.log",
-            command="sudo journalctl -u scylla-server.service -u scylla-jmx.service --no-tail",
+            command="sudo journalctl -u scylla-server.service --no-tail",
             search_locally=True,
         ),
         PrometheusSnapshots(name="prometheus_data"),

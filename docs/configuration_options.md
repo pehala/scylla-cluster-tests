@@ -3102,15 +3102,6 @@ scylla sub option of server_encryption_options: internode_encryption
 **type:** str (appendable)
 
 
-## **jmx_heap_memory** / SCT_JMX_HEAP_MEMORY
-
-The total size of the memory allocated to JMX. Values in MB, so for 1GB enter 1024(MB)
-
-**default:** N/A
-
-**type:** int
-
-
 ## **store_perf_results** / SCT_STORE_PERF_RESULTS
 
 A flag that indicates whether or not to gather the prometheus stats at the end of the run.<br>Intended to be used in performance testing

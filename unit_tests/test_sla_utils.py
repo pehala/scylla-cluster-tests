@@ -32,9 +32,6 @@ class DummyNode(BaseNode):
     def wait_for_cloud_init(self):
         pass
 
-    def jmx_up(self):
-        return True
-
     def db_up(self):
         return True
 

@@ -504,8 +504,6 @@ class NemesisRunner:
                 # When scylla take too long time to bring api port up
                 #  scylla-manager-agent fails to start and never go up
                 self.target_node.start_service(service_name="scylla-manager-agent", timeout=600, ignore_status=True)
-            self.log.info("Waiting JMX services to be restarted after we killed them...")
-            self.target_node.wait_jmx_up()
         with self.action_log_scope(f"Wait for schema agreement on {self.target_node.name}"):
             self.cluster.wait_for_schema_agreement()
 
@@ -829,12 +827,8 @@ class NemesisRunner:
             cdc_success_msg = self.target_node.follow_system_log(patterns=cdc_success_msg_patterns)
             with ignore_raft_topology_cmd_failing():
                 self.reboot_node(target_node=self.target_node, hard=True)
-            if random.choice([True, False]):
-                self.log.info("Waiting scylla services to start after node reboot")
-                self.target_node.wait_db_up()
-            else:
-                self.log.info("Waiting JMX services to start after node reboot")
-                self.target_node.wait_jmx_up()
+            self.log.info("Waiting scylla services to start after node reboot")
+            self.target_node.wait_db_up()
             self.cluster.wait_for_nodes_up_and_normal(nodes=[self.target_node])
             found_cdc_error = list(cdc_expected_error)
             if found_cdc_error:
