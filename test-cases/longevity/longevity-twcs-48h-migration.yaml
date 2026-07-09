@@ -1,0 +1,58 @@
+# LONGEVITY TEST: TWCS 48H WITH ZSTD DICTIONARY COMPRESSION
+#
+# Purpose:
+#   Validates ScyllaDB stability under a 48-hour sustained time-series workload using
+#   Time-Window Compaction Strategy (TWCS) with 60-minute compaction windows, a 3-hour
+#   TTL, and ZSTD dictionary compression (ZstdWithDictsCompressor).
+#   - Surfaces issues with TWCS compaction scheduling under continuous ingestion
+#   - Validates ZSTD dictionary compression stability over extended periods
+#   - Extended duration helps detect memory leaks and performance regressions
+#
+# Cluster:
+#   - 6 DB nodes (i8g.large — ARM64/Graviton) + 3 loaders
+#   - Replication factor: 3
+#   - Nemesis: SisyphusMonkey every 15 min, after reaching the space threshold
+#
+# Workload:
+#   - Preload write: 90K ops/s max rate, 150 concurrency, 200K partitions × 100K rows × 2000B
+#   - Benchmark/migration load: 45K ops/s background write + 2 reads (half-normal, uniform)
+#
+# Table Settings (applied via post_prepare_cql_cmds):
+#   - default_time_to_live: 10800 (3 hours)
+#   - TWCS: compaction_window_size=60 MINUTES
+#   - tombstone_gc: immediate
+#   - compression: ZstdWithDictsCompressor
+
+test_duration: 600
+
+prepare_write_cmd: [
+    "scylla-bench -workload=timeseries -mode=write -replication-factor=3 -partition-count=200000 -clustering-row-count=100000 -clustering-row-size=2000 -concurrency=150 -rows-per-request=1 -start-timestamp=SET_WRITE_TIMESTAMP -connection-count 100 -max-rate 90000 -timeout=120s -retry-number=30 -retry-interval=80ms,1s -duration=120m"
+]
+
+stress_cmd: [
+    "scylla-bench -workload=timeseries -mode=write -replication-factor=3 -partition-count=200000 -clustering-row-count=100000 -clustering-row-size=2000 -concurrency=150 -rows-per-request=1 -start-timestamp=SET_WRITE_TIMESTAMP -connection-count 100 -max-rate 45000 -timeout=120s -retry-number=30 -retry-interval=80ms,1s -duration=120m",
+    "scylla-bench -workload=timeseries -mode=read -partition-count=200000 -concurrency=150 -replication-factor=3 -clustering-row-count=100000 -clustering-row-size=2000  -rows-per-request=1 -start-timestamp=GET_WRITE_TIMESTAMP -write-rate 300 -distribution hnormal --connection-count 100 -duration=120m -timeout=30s -retry-number=30 -retry-interval=80ms,1s",
+    "scylla-bench -workload=timeseries -mode=read -partition-count=200000 -concurrency=150 -replication-factor=3 -clustering-row-count=100000 -clustering-row-size=2000  -rows-per-request=1 -start-timestamp=GET_WRITE_TIMESTAMP -write-rate 300 -distribution uniform --connection-count 100 -duration=120m -timeout=30s -retry-number=30 -retry-interval=80ms,1s"
+]
+
+
+n_db_nodes: 6
+n_loaders: 3
+
+sizing_db:
+  vcpu: 4
+  memory: '>=32'
+  local_disk_gb: '>=900'
+
+nemesis_class_name: 'SisyphusMonkey'
+# exclude ModifyTableCompactionMonkey because it will change TWCS
+nemesis_selector: 'not ModifyTableCompactionMonkey'
+nemesis_seed: '025'
+nemesis_interval: 15
+nemesis_during_prepare: false
+use_hdrhistogram: true
+space_node_threshold: 64424
+pre_create_schema: true
+
+user_prefix: 'longevity-twcs-48h'
+round_robin: true

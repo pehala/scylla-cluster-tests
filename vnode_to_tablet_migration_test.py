@@ -20,7 +20,7 @@ from enum import StrEnum
 from longevity_test import LongevityTest
 from sdcm.cluster import DB_LOG_PATTERN_RESHARDING_FINISH, DB_LOG_PATTERN_RESHARDING_START
 from sdcm.sct_events.system import InfoEvent
-from sdcm.utils.decorators import latency_calculator_decorator
+from sdcm.utils.decorators import latency_calculator_decorator, optional_stage
 from sdcm.utils.tablets.common import wait_no_tablets_migration_running
 from sdcm.wait import wait_for, wait_for_log_lines
 
@@ -319,3 +319,29 @@ class VnodeToTabletMigrationTest(LongevityTest):
         self.db_cluster.start_nemesis()
         self.run_migration()
         self.run_post_migration_benchmark()
+
+
+class VnodeToTabletMigrationTWCS(VnodeToTabletMigrationTest):
+    def create_tables_for_scylla_bench(self, window_size=60, ttl=10800):
+        with self.db_cluster.cql_connection_patient(self.db_cluster.nodes[0]) as session:
+            session.execute("""
+                CREATE KEYSPACE scylla_bench WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor': '3'}
+                AND durable_writes = true;""")
+            session.execute(f"""
+                CREATE TABLE scylla_bench.test (
+                    pk bigint,
+                    ck bigint,
+                    v  blob,
+                    PRIMARY KEY (pk, ck)
+                ) WITH CLUSTERING ORDER BY (ck ASC)
+                    AND default_time_to_live = {ttl}
+                    AND compaction = {{'class': 'TimeWindowCompactionStrategy', 'compaction_window_size': '{window_size}',
+                    'compaction_window_unit': 'MINUTES'}}
+                    AND tombstone_gc = {{'mode':'immediate'}}
+                    AND compression = {{'sstable_compression': 'ZstdWithDictsCompressor'}}""")
+
+    @optional_stage("prepare_write")
+    def run_pre_create_schema(self):
+        pre_create_schema = self.params.get("pre_create_schema")
+        if pre_create_schema:
+            self.create_tables_for_scylla_bench()
