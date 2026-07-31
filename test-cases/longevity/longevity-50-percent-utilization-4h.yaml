@@ -13,7 +13,7 @@
 #     - Migration:
 #     - Post-migration benchmark
 
-test_duration: 600
+test_duration: 1440
 
 # 6 DB nodes across 3 simulated racks (2 nodes per rack). With migration running
 # concurrently with disruptive nemesis, at least 2 nodes per rack are required to
@@ -44,37 +44,37 @@ nemesis_during_prepare: false
 
 prepare_write_cmd:
   - >-
-    cassandra-stress write cl=QUORUM n=120000000
+    cassandra-stress write cl=QUORUM n=320000000
     -schema 'replication(strategy=NetworkTopologyStrategy,replication_factor=3) compaction(strategy=IncrementalCompactionStrategy)'
     -mode cql3 native
     -rate threads=80
-    -pop seq=1..120000000
+    -pop seq=1..320000000
     -col 'n=FIXED(5) size=FIXED(512)'
     -log interval=5
   - >-
-    cassandra-stress write cl=QUORUM n=120000000
+    cassandra-stress write cl=QUORUM n=320000000
     -schema 'replication(strategy=NetworkTopologyStrategy,replication_factor=3) compaction(strategy=IncrementalCompactionStrategy)'
     -mode cql3 native
     -rate threads=80
-    -pop seq=120000001..240000000
+    -pop seq=320000001..640000000
     -col 'n=FIXED(5) size=FIXED(512)'
     -log interval=5
 
 stress_cmd:
   - >-
-    cassandra-stress mixed cl=QUORUM duration=240m
+    cassandra-stress mixed cl=QUORUM duration=780m
     -schema 'replication(strategy=NetworkTopologyStrategy,replication_factor=3) compaction(strategy=IncrementalCompactionStrategy)'
     -mode cql3 native
     -rate threads=50 throttle=30000/s
-    -pop seq=1..120000000
+    -pop seq=1..320000000
     -col 'n=FIXED(5) size=FIXED(512)'
     -log interval=5
   - >-
-    cassandra-stress mixed cl=QUORUM duration=240m
+    cassandra-stress mixed cl=QUORUM duration=780m
     -schema 'replication(strategy=NetworkTopologyStrategy,replication_factor=3) compaction(strategy=IncrementalCompactionStrategy)'
     -mode cql3 native
     -rate threads=50 throttle=30000/s
-    -pop seq=120000001..240000000
+    -pop seq=320000001..640000000
     -col 'n=FIXED(5) size=FIXED(512)'
     -log interval=5
 
