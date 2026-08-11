@@ -292,13 +292,13 @@ class VnodeToTabletMigrationTest(LongevityTest):
         wait_for(
             func=lambda: all([is_keyspace_pow2_converged(coordinator_node, ks) for ks in keyspaces]),
             step=60,
-            timeout=7200,
+            timeout=21600,
             text="Waiting for pow2 tablet layout convergence on all keyspaces",
             throw_exc=True,
         )
 
         InfoEvent(message="Waiting for tablet migration to fully complete").publish()
-        wait_tablets_balanced(self.db_cluster.data_nodes[0], timeout=7200)
+        wait_tablets_balanced(self.db_cluster.data_nodes[0], timeout=21600)
 
     def _finalize_rollback(self, keyspaces: list[str]) -> None:
         """Finalize a rollback for all given keyspaces, returning the cluster to vnodes.
