@@ -71,3 +71,5 @@ stress_cmd:
     -pop seq=1..20971520
     -col 'n=FIXED(10) size=FIXED(512)'
     -log interval=5
+append_scylla_yaml:
+  query_page_size_in_bytes: 67108864
