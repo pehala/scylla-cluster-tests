@@ -80,3 +80,6 @@ stress_cmd:
     --duration=60m --start-cycle=1 --end-cycle=40000001
     --request-timeout=60 --retry-interval='2s,10s' --retry-number=5
     data_dir/latte/s3_range_query.rn
+
+append_scylla_yaml:
+  query_page_size_in_bytes: 67108864
