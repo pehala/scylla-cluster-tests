@@ -218,8 +218,8 @@ class VnodeToTabletMigrationTest(LongevityTest):
                 text=f"Waiting for {node.name} to reach {NodeMigrationStatus.USES_TABLETS!r} for ks={ks}",
                 throw_exc=True,
             )
-        self.log.info("Waiting 300 seconds for cluster to stabilize after upgrading node %s", node.name)
-        time.sleep(300)
+        self.log.info("Waiting 10 minutes for cluster to stabilize after upgrading node %s", node.name)
+        time.sleep(600)
 
     def _rollback_node_to_vnodes(self, node, keyspaces: list[str]) -> None:
         """Roll back a single node from tablets back to vnodes storage.
