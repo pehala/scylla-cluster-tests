@@ -27,6 +27,7 @@ from sdcm.cluster import (
     NodeSetupFailed,
     NodeSetupTimeout,
 )
+from sdcm.mgmt.common import ScyllaManagerError, TaskStatus
 from sdcm.sct_events.group_common_events import suppress_expected_unavailability_errors
 from sdcm.sct_events.system import InfoEvent
 from sdcm.utils.decorators import latency_calculator_decorator, retrying
@@ -116,6 +117,35 @@ def is_keyspace_pow2_converged(node, keyspace: str) -> bool:
 
 class VnodeToTabletMigrationTest(LongevityTest):
     """Test vnode to tablet migration scenarios."""
+
+    def _run_repair_via_manager(self, reason: str, timeout: int = 3 * 3600) -> None:
+        """Run a full-cluster repair using Scylla Manager when manager is enabled.
+
+        Mirrors nemesis behavior: run manager repair and validate the final task status.
+
+        Args:
+            reason: Context string to make repair logs/events easier to read.
+            timeout: Repair timeout in seconds.
+        """
+        if not self.params.get("use_mgmt") and not self.params.get("use_cloud_manager"):
+            InfoEvent(message=f"FinishEvent - Manager repair was skipped ({reason})").publish()
+            return
+
+        InfoEvent(message=f"StartEvent - Run manager repair ({reason})").publish()
+        mgr_cluster = self.db_cluster.get_cluster_manager()
+        repair_task = mgr_cluster.create_repair_task()
+        task_final_status = repair_task.wait_and_get_final_status(timeout=timeout)
+        if task_final_status != TaskStatus.DONE:
+            progress_full_string = repair_task.progress_string(
+                parse_table_res=False, is_verify_errorless_result=True
+            ).stdout
+            if task_final_status != TaskStatus.ERROR_FINAL:
+                repair_task.stop()
+            raise ScyllaManagerError(
+                f"Task: {repair_task.id} final status is: {task_final_status}.\n"
+                f"Task progress string: {progress_full_string}"
+            )
+        InfoEvent(message=f"FinishEvent - Manager repair has finished ({reason}), task_id={repair_task.id}").publish()
 
     def restart_node_after_migration(self, node) -> None:
         """Restart a node after a migrate-to-tablets upgrade or downgrade, waiting for resharding.
@@ -635,6 +665,7 @@ class VnodeToTabletMigrationTest(LongevityTest):
         tables to Argus for before/during/after comparison.
         """
         self._common_test_setup()
+        self.run_post_prepare_cql_cmds()
         keyspaces = self.db_cluster.get_test_keyspaces()
         data_nodes = self.db_cluster.data_nodes
 
@@ -675,3 +706,4 @@ class VnodeToTabletMigrationTest(LongevityTest):
         self.db_cluster.start_nemesis()
         self.run_migration(migration_steps)
         self.run_post_migration_benchmark()
+        self._run_repair_via_manager(reason="After migration")

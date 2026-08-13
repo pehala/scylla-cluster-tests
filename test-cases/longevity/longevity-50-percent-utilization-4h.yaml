@@ -78,4 +78,8 @@ stress_cmd:
     -col 'n=FIXED(5) size=FIXED(512)'
     -log interval=5
 
+post_prepare_cql_cmds: >-
+    ALTER TABLE keyspace1.standard1
+    WITH tombstone_gc = {'mode':'repair'}
+
 use_hdrhistogram: true
