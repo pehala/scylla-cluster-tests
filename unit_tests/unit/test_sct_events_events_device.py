@@ -22,6 +22,8 @@ from sdcm.sct_events.events_device import EventsDevice, start_events_main_device
 from sdcm.sct_events.events_processes import EventsProcessesRegistry
 from sdcm.wait import wait_for
 
+pytestmark = pytest.mark.real_events
+
 
 @pytest.fixture
 def events_processes_registry(tmp_path):

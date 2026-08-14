@@ -14,6 +14,8 @@
 import time
 import unittest.mock
 
+import pytest
+
 from sdcm.sct_events import Severity
 from sdcm.sct_events.health import ClusterHealthValidatorEvent
 from sdcm.sct_events.setup import EVENTS_SUBSCRIBERS_START_DELAY
@@ -34,6 +36,8 @@ from sdcm.sct_events.events_processes import (
 from sdcm.wait import wait_for
 
 from unit_tests.lib.events_utils import EventsUtilsMixin
+
+pytestmark = pytest.mark.real_events
 
 
 class TestGrafana(EventsUtilsMixin):

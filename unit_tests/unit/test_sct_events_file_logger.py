@@ -13,6 +13,8 @@
 
 import time
 
+import pytest
+
 from sdcm.sct_events import Severity
 from sdcm.sct_events.system import SpotTerminationEvent
 from sdcm.sct_events.setup import EVENTS_SUBSCRIBERS_START_DELAY
@@ -25,6 +27,8 @@ from sdcm.sct_events.file_logger import (
 )
 
 from unit_tests.lib.events_utils import EventsUtilsMixin
+
+pytestmark = pytest.mark.real_events
 
 
 class TestFileLogger(EventsUtilsMixin):

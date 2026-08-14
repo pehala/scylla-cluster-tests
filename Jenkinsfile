@@ -187,6 +187,36 @@ pipeline {
                 }
             }
         }
+        stage("real events tests") {
+            options {
+                timeout(time: 20, unit: 'MINUTES')
+            }
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    withEnv(["AWS_ACCESS_KEY_ID=", "AWS_SECRET_ACCESS_KEY="]) {
+                        script {
+                            checkoutQaInternal(params)
+                            sh './docker/env/hydra.sh real-events-tests --junit-xml real-events-tests-junit.xml'
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    junit testResults: 'real-events-tests-junit.xml', allowEmptyResults: true, keepProperties: true
+                }
+                success {
+                    script {
+                        pullRequestSetResult('success', 'jenkins/real-events-tests', 'All real-events tests are passed')
+                    }
+                }
+                failure {
+                    script {
+                        pullRequestSetResult('failure', 'jenkins/real-events-tests', 'Some real-events tests failed')
+                    }
+                }
+            }
+        }
         stage("collect tests") {
             options {
                 timeout(time: 10, unit: 'MINUTES')
@@ -514,7 +544,7 @@ pipeline {
             script {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     postTestSummaryComment(
-                        junitXmlPaths: ['unit-tests-junit.xml', 'scylla-cluster-tests/integration-tests-junit.xml', 'lint-pipelines-junit.xml'],
+                        junitXmlPaths: ['unit-tests-junit.xml', 'real-events-tests-junit.xml', 'scylla-cluster-tests/integration-tests-junit.xml', 'lint-pipelines-junit.xml'],
                         precommitLog: 'precommit-output.log',
                         stageName: 'Test Summary',
                     )

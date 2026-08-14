@@ -86,6 +86,7 @@ def argus_pipeline(tmp_path):
         stop_events_device(_registry=registry)
 
 
+@pytest.mark.real_events
 def test_stop_drains_pending_events(argus_pipeline):
     """stop() posts every event still queued in the aggregator before the thread exits."""
     postman, aggregator = argus_pipeline
@@ -106,6 +107,7 @@ def test_stop_drains_pending_events(argus_pipeline):
     assert submitted == events
 
 
+@pytest.mark.real_events
 def test_stop_is_bounded_when_submit_hangs(argus_pipeline):
     """stop() returns within the caller-provided timeout even when a submit blocks forever."""
     postman, aggregator = argus_pipeline
@@ -130,6 +132,7 @@ def test_stop_is_bounded_when_submit_hangs(argus_pipeline):
         release.set()  # release the leaked daemon worker
 
 
+@pytest.mark.real_events
 def test_stop_without_queued_events_returns_quickly(argus_pipeline):
     """stop() with an empty queue does not block and posts nothing."""
     postman, _ = argus_pipeline

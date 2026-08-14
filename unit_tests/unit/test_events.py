@@ -33,6 +33,8 @@ from unit_tests.lib.real_events import RealEventsTest
 
 LOGGER = logging.getLogger(__name__)
 
+pytestmark = pytest.mark.real_events
+
 
 class TestSctEvents(RealEventsTest):
     def test_disruption_skipped_event(self):

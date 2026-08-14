@@ -13,6 +13,7 @@
 import time
 import unittest.mock
 
+import pytest
 
 from sdcm.sct_events.event_handler import start_events_handler
 from sdcm.sct_events.events_processes import get_events_process, EVENTS_HANDLER_ID
@@ -20,6 +21,8 @@ from sdcm.sct_events.loaders import CassandraStressLogEvent
 from sdcm.sct_events.setup import EVENTS_SUBSCRIBERS_START_DELAY
 from sdcm.test_config import TestConfig
 from unit_tests.lib.events_utils import EventsUtilsMixin
+
+pytestmark = pytest.mark.real_events
 
 
 class TestEventsHandler(EventsUtilsMixin):

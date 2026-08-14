@@ -2279,7 +2279,20 @@ cli.add_command(investigate)
 @click.option("-n", required=False, default=4, help="Sets number of parallel tests to run, default is 4")
 @click.option("--junit-xml", required=False, default="", help="Path to write JUnit XML report")
 def unit_tests(test, n, junit_xml):
-    args = ["-v", "-m", "not integration", f"-n{n}", *(f"unit_tests/{t}" for t in test)]
+    args = ["-v", "-m", "not integration and not real_events", f"-n{n}", *(f"unit_tests/{t}" for t in test)]
+    if junit_xml:
+        args.append(f"--junit-xml={junit_xml}")
+    sys.exit(pytest.main(args))
+
+
+@cli.command("real-events-tests", help="Run SCT unit-tests that start a real EventsDevice process")
+@click.option(
+    "-t", "--test", required=False, default=[""], multiple=True, help="Run specific test file from unit-tests directory"
+)
+@click.option("-n", required=False, default=1, help="Sets number of parallel tests to run, default is 1")
+@click.option("--junit-xml", required=False, default="", help="Path to write JUnit XML report")
+def real_events_tests(test, n, junit_xml):
+    args = ["-v", "-m", "real_events", f"-n{n}", *(f"unit_tests/{t}" for t in test)]
     if junit_xml:
         args.append(f"--junit-xml={junit_xml}")
     sys.exit(pytest.main(args))
