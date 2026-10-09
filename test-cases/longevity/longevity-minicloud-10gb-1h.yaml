@@ -66,3 +66,5 @@ enterprise_disable_kms: true
 enable_kms_key_rotation: false
 
 run_db_node_benchmarks: false
+
+topology_barrier_stall_events: true

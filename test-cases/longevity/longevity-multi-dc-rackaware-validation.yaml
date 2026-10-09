@@ -45,3 +45,5 @@ user_prefix: 'multi-dc-rackaware-validation'
 teardown_validators:
   rackaware:
     enabled: true
+
+topology_barrier_stall_events: true

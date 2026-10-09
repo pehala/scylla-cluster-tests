@@ -45,3 +45,5 @@ use_preinstalled_scylla: false
 # SCT_SCYLLA_VERSION=3.0 or SCT_SCYLLA_REPO=
 # for the upgrading version you need:
 # SCT_NEW_SCYLLA_REPO=
+
+topology_barrier_stall_events: true

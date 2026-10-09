@@ -42,3 +42,5 @@ space_node_threshold: 64424
 client_encrypt: true
 
 run_db_node_benchmarks: false
+
+topology_barrier_stall_events: true

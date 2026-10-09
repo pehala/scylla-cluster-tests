@@ -83,3 +83,5 @@ gemini_log_cql_statements: false
 
 # Disable Gemini workload during rolling upgrade test
 run_gemini_in_rolling_upgrade: false
+
+topology_barrier_stall_events: true

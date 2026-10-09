@@ -46,3 +46,5 @@ gemini_cmd: |
 gemini_log_cql_statements: true
 
 db_type: scylla
+
+topology_barrier_stall_events: true

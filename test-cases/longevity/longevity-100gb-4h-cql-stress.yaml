@@ -74,3 +74,5 @@ stress_cmd:
     -pop seq=1..20971520
     -col 'n=FIXED(10) size=FIXED(512)'
     -log interval=5
+
+topology_barrier_stall_events: true

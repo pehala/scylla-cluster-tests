@@ -18,3 +18,5 @@ n_db_nodes: 6
 simulated_racks: 3
 
 user_prefix: 'platform-migration-batched'
+
+topology_barrier_stall_events: true

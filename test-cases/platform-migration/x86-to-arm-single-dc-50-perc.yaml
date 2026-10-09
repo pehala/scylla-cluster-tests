@@ -57,3 +57,5 @@ round_robin: true
 nemesis_class_name: 'NoOpMonkey'
 user_prefix: 'platform-migration'
 use_preinstalled_scylla: true
+
+topology_barrier_stall_events: true

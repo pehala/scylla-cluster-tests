@@ -47,3 +47,5 @@ nemesis_class_name: 'SisyphusMonkey'
 nemesis_interval: 10
 
 user_prefix: 'multi-dc-rackaware-with-znode-dc'
+
+topology_barrier_stall_events: true
