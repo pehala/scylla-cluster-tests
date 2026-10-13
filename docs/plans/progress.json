@@ -179,7 +179,7 @@
       "status": "draft",
       "created": "2026-02-01",
       "phases_total": 4,
-      "phases_done": 0
+      "phases_done": 2
     },
     {
       "id": "k8s-multitenancy-dict-config",
@@ -329,6 +329,16 @@
       "created": "2026-09-04",
       "phases_total": 9,
       "phases_done": 9
+    },
+    {
+      "id": "nemesis-nested-config",
+      "title": "Nested Nemesis Configuration",
+      "file": "config/nemesis-nested-config.md",
+      "domain": "config",
+      "status": "in_progress",
+      "created": "2026-10-09",
+      "phases_total": 4,
+      "phases_done": 2
     }
   ]
 }
