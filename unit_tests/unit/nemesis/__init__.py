@@ -206,6 +206,10 @@ class WeightedTestRunnerConfig(NemesisRunnerConfig):
     weights: dict[str, NonNegativeFloat]
     default_weight: NonNegativeFloat = 1
 
+    def check_disruptions(self, disruption_names: frozenset[str]) -> None:
+        if unknown := sorted(set(self.weights) - disruption_names):
+            raise ValueError(f"`weights` names unknown nemesis classes: {unknown}")
+
 
 class WeightedTestRunner(TestRunnerBase):
     """Runner with options of its own."""
